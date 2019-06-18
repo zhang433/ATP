@@ -1,0 +1,8 @@
+mount /dev/mmcblk0p1 /mnt/
+insmod /etc/8189es.ko > /dev/null
+ifconfig wlan0 up
+ifconfig wlan0 192.168.2.1
+/home/root/ARM_ReceiverAndProtecter &
+/home/root/ARM_Worker &                    
+udhcpd /etc/udhcpd.conf &
+hostapd /etc/11b.conf &

@@ -1,0 +1,4 @@
+export TSLIB_TSDEVICE=/dev/input/event1
+ts_calibrate && ts_test &
+/home/root/wlan_start_up.sh &
+exit 0

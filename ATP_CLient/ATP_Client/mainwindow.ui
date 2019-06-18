@@ -1,0 +1,1784 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1237</width>
+    <height>817</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_17">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <widget class="QWidget" name="Main_ATB">
+       <attribute name="title">
+        <string>主界面</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QWidget" name="widget_main" native="true">
+          <property name="styleSheet">
+           <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,100,30">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_13" stretch="1,1,1,1,55">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,10">
+                 <item>
+                  <widget class="QLabel" name="label_12">
+                   <property name="text">
+                    <string>ATP日期</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLCDNumber" name="ATPSHIJIANDATE">
+                   <property name="font">
+                    <font>
+                     <family>微软雅黑</family>
+                     <pointsize>10</pointsize>
+                     <weight>50</weight>
+                     <italic>false</italic>
+                     <bold>false</bold>
+                    </font>
+                   </property>
+                   <property name="lineWidth">
+                    <number>1</number>
+                   </property>
+                   <property name="midLineWidth">
+                    <number>0</number>
+                   </property>
+                   <property name="digitCount">
+                    <number>10</number>
+                   </property>
+                   <property name="segmentStyle">
+                    <enum>QLCDNumber::Flat</enum>
+                   </property>
+                   <property name="value" stdset="0">
+                    <double>0.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,10">
+                 <item>
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>ATP时间</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLCDNumber" name="ATPSHIJIANTIME">
+                   <property name="font">
+                    <font>
+                     <family>微软雅黑</family>
+                     <pointsize>10</pointsize>
+                     <weight>50</weight>
+                     <italic>false</italic>
+                     <bold>false</bold>
+                    </font>
+                   </property>
+                   <property name="digitCount">
+                    <number>10</number>
+                   </property>
+                   <property name="segmentStyle">
+                    <enum>QLCDNumber::Flat</enum>
+                   </property>
+                   <property name="value" stdset="0">
+                    <double>0.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_2">
+                 <property name="title">
+                  <string>速度信息</string>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,3,10,1">
+                    <item>
+                     <widget class="QLabel" name="label_18">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 0, 0);
+background-color:rgb(0, 0, 0);</string>
+                      </property>
+                      <property name="text">
+                       <string>1</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_4">
+                      <property name="text">
+                       <string>当前速度</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLCDNumber" name="DANGQIANSUDU">
+                      <property name="font">
+                       <font>
+                        <family>微软雅黑</family>
+                        <pointsize>10</pointsize>
+                        <weight>50</weight>
+                        <italic>false</italic>
+                        <bold>false</bold>
+                       </font>
+                      </property>
+                      <property name="digitCount">
+                       <number>4</number>
+                      </property>
+                      <property name="segmentStyle">
+                       <enum>QLCDNumber::Flat</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_8">
+                      <property name="text">
+                       <string>KM/H</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,3,10,1">
+                    <item>
+                     <widget class="QLabel" name="label_19">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(255, 0, 0);
+background-color:rgb(255, 0, 0);</string>
+                      </property>
+                      <property name="text">
+                       <string>1</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_2">
+                      <property name="text">
+                       <string>EBP速度</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLCDNumber" name="EBPSUDU">
+                      <property name="contextMenuPolicy">
+                       <enum>Qt::DefaultContextMenu</enum>
+                      </property>
+                      <property name="lineWidth">
+                       <number>1</number>
+                      </property>
+                      <property name="digitCount">
+                       <number>4</number>
+                      </property>
+                      <property name="segmentStyle">
+                       <enum>QLCDNumber::Flat</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_9">
+                      <property name="text">
+                       <string>KM/H</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,3,10,1">
+                    <item>
+                     <widget class="QLabel" name="label_20">
+                      <property name="styleSheet">
+                       <string notr="true">background-color: rgb(128, 128, 0);</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_3">
+                      <property name="text">
+                       <string>NBP速度</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLCDNumber" name="NBPSUDU">
+                      <property name="digitCount">
+                       <number>4</number>
+                      </property>
+                      <property name="segmentStyle">
+                       <enum>QLCDNumber::Flat</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_10">
+                      <property name="text">
+                       <string>KM/H</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,3,10,1">
+                    <item>
+                     <widget class="QLabel" name="label_21">
+                      <property name="styleSheet">
+                       <string notr="true">background-color: rgb(0, 170, 255);</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_15">
+                      <property name="text">
+                       <string>目标速度</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLCDNumber" name="MUBIAOSUDU">
+                      <property name="digitCount">
+                       <number>4</number>
+                      </property>
+                      <property name="segmentStyle">
+                       <enum>QLCDNumber::Flat</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_45">
+                      <property name="text">
+                       <string>KM/H</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_3">
+                 <property name="title">
+                  <string>ATP基础数据</string>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_2">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="3,5">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_10">
+                      <item>
+                       <widget class="QLabel" name="label_5">
+                        <property name="text">
+                         <string>车次</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_11">
+                        <property name="text">
+                         <string>等级</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_14">
+                        <property name="text">
+                         <string>动作模式</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_16">
+                        <property name="text">
+                         <string>制动指令</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_17">
+                        <property name="text">
+                         <string>目标距离</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_52">
+                        <property name="text">
+                         <string>里程</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_53">
+                        <property name="text">
+                         <string>载频</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_55">
+                        <property name="text">
+                         <string>低频</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_56">
+                        <property name="text">
+                         <string>司机ID</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_11">
+                      <item>
+                       <widget class="QLineEdit" name="CHECI">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="DENGJI">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="DONGZUOMOSHI">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="ZHIDONGZHILING">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="MUBIAOJULI">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="LICHENG">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="ZAIPIN">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="DIPIN">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="SIJIID">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox">
+                 <property name="title">
+                  <string>DMI文本</string>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_8">
+                  <item>
+                   <widget class="QTextEdit" name="DMIWENBEN">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_4" stretch="10,1">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0">
+                 <item>
+                  <widget class="QFrame" name="frame">
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <property name="lineWidth">
+                    <number>0</number>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="0">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="ChartView" name="Draw_FRAME">
+                      <property name="frameShape">
+                       <enum>QFrame::StyledPanel</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <property name="lineWidth">
+                       <number>0</number>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_bottom2" stretch="5">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_bottom1" stretch="2,2">
+                   <item>
+                    <widget class="QGroupBox" name="groupBox_yunXingJiChu">
+                     <property name="title">
+                      <string>200C数据</string>
+                     </property>
+                     <layout class="QGridLayout" name="gridLayout">
+                      <item row="1" column="1">
+                       <widget class="QLineEdit" name="ZUIDACHETOUWUCHA">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="2" colspan="2">
+                       <widget class="QLabel" name="label_35">
+                        <property name="text">
+                         <string>临时限速长度</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="4">
+                       <widget class="QLineEdit" name="YUNXUSUDU">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="label_6">
+                        <property name="text">
+                         <string>车长</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="1">
+                       <widget class="QLineEdit" name="ZUIXIAOCHETOUWUCHA">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="2">
+                       <widget class="QLabel" name="label_34">
+                        <property name="text">
+                         <string>允许速度</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="2">
+                       <widget class="QLabel" name="label_33">
+                        <property name="text">
+                         <string>MA长度</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="4">
+                       <widget class="QLineEdit" name="MACHANGDU">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="0">
+                       <widget class="QLabel" name="label_32">
+                        <property name="text">
+                         <string>自走行距离</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="label_30">
+                        <property name="text">
+                         <string>最大车头误差</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="0">
+                       <widget class="QLabel" name="label_43">
+                        <property name="text">
+                         <string>最小车头误差</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="1">
+                       <widget class="QLineEdit" name="ZIZOUXINGJULI">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="4">
+                       <widget class="QLineEdit" name="LINSHIXIANSUCHANGDU">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QLineEdit" name="CHECHANG">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="4">
+                       <widget class="QLineEdit" name="YINGDAQIBIANHAO">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="2">
+                       <widget class="QLabel" name="label_44">
+                        <property name="text">
+                         <string>应答器编号</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QVBoxLayout" name="verticalLayout_errorInfo">
+                     <item>
+                      <widget class="QLabel" name="label_46">
+                       <property name="text">
+                        <string>比对错误信息</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QListWidget" name="Errmsg_LISTWIDGET">
+                       <property name="minimumSize">
+                        <size>
+                         <width>200</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_22" stretch="0,100,1,40">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,100,0">
+                 <item>
+                  <widget class="QLabel" name="AnalysisTitle_label">
+                   <property name="text">
+                    <string>无数据</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_16"/>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="toolButton">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>../../Documents/QtProject/ARM_Linux_NO_UI/max.png</normaloff>../../Documents/QtProject/ARM_Linux_NO_UI/max.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>16</width>
+                     <height>16</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QTreeWidget" name="AnalysisResult_treeWidget">
+                 <column>
+                  <property name="text">
+                   <string>无数据</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>原始数据内容</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTextBrowser" name="BinaryData_textBrowser"/>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+          </layout>
+          <zorder></zorder>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>应答器信息</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_83">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_79" stretch="3,1">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_62">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_63">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLabel" name="labe_baliseLocation_sheet">
+                <property name="text">
+                 <string>应答器位置表</string>
+                </property>
+                <property name="textFormat">
+                 <enum>Qt::AutoText</enum>
+                </property>
+                <property name="scaledContents">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTabWidget" name="tabWidget_baliseLocation_sheet_up">
+                <property name="tabPosition">
+                 <enum>QTabWidget::West</enum>
+                </property>
+                <property name="currentIndex">
+                 <number>1</number>
+                </property>
+                <widget class="QWidget" name="tab_45">
+                 <attribute name="title">
+                  <string>上行线</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_80">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_baliseLocation_sheet_up">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_46">
+                 <attribute name="title">
+                  <string>下行线</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_81">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_baliseLocation_sheet_down">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_65">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLabel" name="label_baliseLocation_compare">
+                <property name="text">
+                 <string>应答器位置比对</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTableWidget" name="tableWidget_baliseLocation_compare_info">
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <column>
+                 <property name="text">
+                  <string>应答器公里标差值</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>D_LINK值</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>匹配结果</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>ATP测距误差</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>匹配结果</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>误差范围</string>
+                 </property>
+                </column>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_66">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_baliseLocation_compareHistory">
+              <property name="text">
+               <string>比对历史</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listWidget_baliseLocation_compare_history"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>轨道电路</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_17">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_30" stretch="3,1">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_15">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_16">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLabel" name="labe_trackCircuit_sheet">
+                <property name="text">
+                 <string>线路数据表</string>
+                </property>
+                <property name="textFormat">
+                 <enum>Qt::AutoText</enum>
+                </property>
+                <property name="scaledContents">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTabWidget" name="tabWidget_neutralSection_sheet_2">
+                <property name="tabPosition">
+                 <enum>QTabWidget::West</enum>
+                </property>
+                <property name="currentIndex">
+                 <number>2</number>
+                </property>
+                <widget class="QWidget" name="tab_15">
+                 <attribute name="title">
+                  <string>上行正向</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_31">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_trackCircuit_sheet_upFro">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_16">
+                 <attribute name="title">
+                  <string>上行反向</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_32">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_trackCircuit_sheet_upBack">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_17">
+                 <attribute name="title">
+                  <string>下行正向</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_18">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_trackCircuit_sheet_downFro">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_18">
+                 <attribute name="title">
+                  <string>下行反向</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_33">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_trackCircuit_sheet_downBack">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_41">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLabel" name="label_trackCircuit_compare">
+                <property name="text">
+                 <string>轨道电路信息比对</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTableWidget" name="tableWidget_trackCircuit_compare_info">
+                <attribute name="horizontalHeaderDefaultSectionSize">
+                 <number>150</number>
+                </attribute>
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_42">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_neutralSection_compareHistory_2">
+              <property name="text">
+               <string>比对历史</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listWidget_trackCircuit_compare_history"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>线路速度</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_25">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_24" stretch="3,1">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_14" stretch="5,5">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_12" stretch="0,0">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLabel" name="label_speed">
+                <property name="text">
+                 <string>线路速度表</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTabWidget" name="tabWidget_speed_sheet">
+                <property name="tabPosition">
+                 <enum>QTabWidget::West</enum>
+                </property>
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="tab_11">
+                 <attribute name="title">
+                  <string>上行正向</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_26">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_speed_sheet_upFro">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                    <attribute name="verticalHeaderHighlightSections">
+                     <bool>true</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_12">
+                 <attribute name="title">
+                  <string>上行反向</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_27">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_speed_sheet_upBack">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                    <attribute name="verticalHeaderHighlightSections">
+                     <bool>true</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_13">
+                 <attribute name="title">
+                  <string>下行正向</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_28">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_speed_sheet_downFro">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                    <attribute name="verticalHeaderHighlightSections">
+                     <bool>true</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_14">
+                 <attribute name="title">
+                  <string>下行反向</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_29">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_speed_sheet_downBack">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                    <attribute name="verticalHeaderHighlightSections">
+                     <bool>true</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_32">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLabel" name="label_balise">
+                <property name="text">
+                 <string>应答器速度信息</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTableWidget" name="tableWidget_speed_compare_info">
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_34">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_history">
+              <property name="text">
+               <string>比对历史</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listWidget_speed_compare_history"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_5">
+       <attribute name="title">
+        <string>线路坡度</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_38">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_34" stretch="3,1">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_19">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_20">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLabel" name="labe_grade_sheet_2">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="layoutDirection">
+                 <enum>Qt::LeftToRight</enum>
+                </property>
+                <property name="autoFillBackground">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>线路坡度表</string>
+                </property>
+                <property name="textFormat">
+                 <enum>Qt::AutoText</enum>
+                </property>
+                <property name="scaledContents">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTabWidget" name="tabWidget_neutralSection_sheet_3">
+                <property name="tabPosition">
+                 <enum>QTabWidget::West</enum>
+                </property>
+                <property name="currentIndex">
+                 <number>1</number>
+                </property>
+                <widget class="QWidget" name="tab_19">
+                 <attribute name="title">
+                  <string>上行正向</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_35">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_grade_sheet_upFro">
+                    <property name="focusPolicy">
+                     <enum>Qt::NoFocus</enum>
+                    </property>
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_20">
+                 <attribute name="title">
+                  <string>上行反向</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_36">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_grade_sheet_upBack">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_21">
+                 <attribute name="title">
+                  <string>下行正向</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_21">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_grade_sheet_downFro">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_22">
+                 <attribute name="title">
+                  <string>下行反向</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_37">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_grade_sheet_downBack">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_43">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLabel" name="label_grade_compare_2">
+                <property name="text">
+                 <string>坡度信息比对</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTableWidget" name="tableWidget_grade_compare_info">
+                <property name="columnCount">
+                 <number>9</number>
+                </property>
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <column>
+                 <property name="text">
+                  <string>终点公里标(应答器)</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>终点公里标(表)</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>比对结果</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>长度(应答器)</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>长度(表)</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>比对结果</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>坡度(应答器)</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>坡度(表)</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>比对结果</string>
+                 </property>
+                </column>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_44">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_grade_compareHistory">
+              <property name="text">
+               <string>比对历史</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listWidget_grade_compare_history"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_7">
+       <attribute name="title">
+        <string>车站名与站台信息</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_87">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_82" stretch="3,1">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_64">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_67">
+              <item>
+               <widget class="QTabWidget" name="tabWidget_stationSide_sheet">
+                <property name="layoutDirection">
+                 <enum>Qt::LeftToRight</enum>
+                </property>
+                <property name="tabPosition">
+                 <enum>QTabWidget::North</enum>
+                </property>
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="tab_47">
+                 <attribute name="title">
+                  <string>车站信息表</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_84">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_station_sheet">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_48">
+                 <attribute name="title">
+                  <string>站台侧信息表</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_85">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_stationSide_sheet">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_69">
+              <item>
+               <widget class="QTabWidget" name="tabWidget_2">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="tab_25">
+                 <attribute name="title">
+                  <string>车站信息比对</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_39">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_station_compare_info">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                    <column>
+                     <property name="text">
+                      <string>车站名(应答器)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>车站名(表)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>匹配结果</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>大区编号(应答器)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>大区编号(表)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>匹配结果</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>小区编号(应答器)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>小区编号(表)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>匹配结果</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>车站编号(应答器)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>车站编号(表)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>匹配结果</string>
+                     </property>
+                    </column>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_26">
+                 <attribute name="title">
+                  <string>站台侧信息比对</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_40">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_stationSide_compare_info">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                    <column>
+                     <property name="text">
+                      <string>当前车站名</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>车站名(表)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>当前应答器名称</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>应答器编号(表)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>站台侧</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>站台侧(表)</string>
+                     </property>
+                    </column>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_70">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_neutralSection_compareHistory_5">
+              <property name="text">
+               <string>比对历史</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listWidget_station_compare_history"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_8">
+       <attribute name="title">
+        <string>分相区</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_21">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="3,1">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLabel" name="labe_neutralSection_sheet">
+                <property name="text">
+                 <string>分相区信息表</string>
+                </property>
+                <property name="textFormat">
+                 <enum>Qt::AutoText</enum>
+                </property>
+                <property name="scaledContents">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTabWidget" name="tabWidget_neutralSection_sheet">
+                <property name="tabPosition">
+                 <enum>QTabWidget::West</enum>
+                </property>
+                <property name="currentIndex">
+                 <number>1</number>
+                </property>
+                <widget class="QWidget" name="tab">
+                 <attribute name="title">
+                  <string>上行线</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_22">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_neutralSection_sheet_up">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_10">
+                 <attribute name="title">
+                  <string>下行线</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_23">
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_neutralSection_sheet_down">
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_39">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLabel" name="label_neutralSection_compare">
+                <property name="text">
+                 <string>分相区信息比对</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTableWidget" name="tableWidget_neutralSection_compare_info">
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <column>
+                 <property name="text">
+                  <string>起点位置(应答器)</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>起点位置(表)</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>比对结果 / 误差</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>终点位置(应答器)</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>终点位置(表)</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>比对结果  / 误差</string>
+                 </property>
+                </column>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_40">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_neutralSection_compareHistory">
+              <property name="text">
+               <string>比对历史</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listWidget_neutralSection_compare_history"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_9">
+       <attribute name="title">
+        <string>临时限速</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_78">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_77" stretch="3,1">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_60">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_temporySpeed">
+              <property name="text">
+               <string>应答器临时限速信息</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTableWidget" name="tableWidget_temporySpeed_info">
+              <column>
+               <property name="text">
+                <string>起点位置</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>终点位置</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>速度km/h</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_61">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_temporySpeed_history">
+              <property name="text">
+               <string>应答器历史</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listWidget_temporySpeed_history"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1237</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <addaction name="ImportATPFiles_MENU"/>
+    <addaction name="separator"/>
+    <addaction name="GetRepotr_MENU"/>
+    <addaction name="SetTrainNumber_MENU"/>
+    <addaction name="ClearLocal"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>设置</string>
+    </property>
+    <addaction name="ConfigUserInfo_MENU"/>
+    <addaction name="action"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="ImportATPFiles_MENU">
+   <property name="text">
+    <string>导入列控数据</string>
+   </property>
+  </action>
+  <action name="GetRepotr_MENU">
+   <property name="text">
+    <string>获取报告</string>
+   </property>
+  </action>
+  <action name="SetTrainNumber_MENU">
+   <property name="text">
+    <string>设定当前车次</string>
+   </property>
+  </action>
+  <action name="ClearLocal">
+   <property name="text">
+    <string>清空本机数据</string>
+   </property>
+  </action>
+  <action name="ConfigUserInfo_MENU">
+   <property name="text">
+    <string>用户信息管理</string>
+   </property>
+   <property name="toolTip">
+    <string>用户信息管理</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>设备授权</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ChartView</class>
+   <extends>QFrame</extends>
+   <header location="global">chartview.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
