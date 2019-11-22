@@ -119,14 +119,14 @@ QDataStream& operator>>(QDataStream& QDS, PathWaySpeed& C)
 	return QDS;
 }
 
-QDataStream& operator<<(QDataStream& QDS, const BaliseLocation& C)
+QDataStream& operator<<(QDataStream& QDS, const BalisePosition& C)
 {
 	QDS << C.ID << C.baliseName << C.baliseID << \
 		C.baliseKm << C.baliseType << C.baliseUse << C.remark_1 << C.remark_2;
 	return QDS;
 }
 
-QDataStream& operator>>(QDataStream& QDS, BaliseLocation& C)
+QDataStream& operator>>(QDataStream& QDS, BalisePosition& C)
 {
 	QDS >> C.ID >> C.baliseName >> C.baliseID >> \
 		C.baliseKm >> C.baliseType >> C.baliseUse >> C.remark_1 >> C.remark_2;

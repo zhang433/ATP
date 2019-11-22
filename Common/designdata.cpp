@@ -1,5 +1,6 @@
 ﻿#include "designdata.h"
 #include <qmap.h>
+#include <QDebug>
 
 
 //********静态变量初始化*********************************
@@ -25,8 +26,8 @@ QVector<PathWaySpeed> DesignData::pathWaySpeedUpVec;       //线路速度表-上
 QVector<PathWaySpeed> DesignData::pathWaySpeedDownBackVec; //线路速度表-下行反向
 QVector<PathWaySpeed> DesignData::pathWaySpeedUpBackVec;   //线路速度表-上行反向
 
-QMap<QString, BaliseLocation> DesignData::baliseLocationUpMap;//应答器位置表-上行
-QMap<QString, BaliseLocation> DesignData::baliseLocationDownMap; //应答器位置表-下行
+QMap<QString, BalisePosition> DesignData::baliseLocationUpMap;//应答器位置表-上行
+QMap<QString, BalisePosition> DesignData::baliseLocationDownMap; //应答器位置表-下行
 QMap<QString, QString> DesignData::balishUseMap; //应答器用途映射
 
 QVector<BrokenLink> DesignData::brokenLinkVec;             //里程断链明细表
@@ -192,23 +193,28 @@ void DesignData::clearStationSideVec()
     stationSideVec.clear();
 }
 
-/**************************************************
- * @功能：返回应答器组第一个应答器公里标
- * @形参：baliseID - 应答器组中的任一一个应答器编号
- * @返回值：应答器公里标
- **************************************************/
+/**
+ * @brief DesignData::FindBaliseKmByID 返回应答器组第一个应答器公里标
+ * @param baliseID 应答器编号，或者应答器组的编号
+ * @return 应答器公里标
+ */
 int DesignData::FindBaliseKmByID(QString baliseID)
 {
-	if (baliseID.size() != 12)
+    if(baliseID.size()==12)//应答器组编号
+    {
+        if (baliseLocationUpMap.find(baliseID) != baliseLocationUpMap.end())
+            return DesignData::ConvertKmStr2Num(baliseLocationUpMap[baliseID].baliseKm);
+        else if (baliseLocationDownMap.find(baliseID) != baliseLocationDownMap.end())
+            return DesignData::ConvertKmStr2Num(baliseLocationDownMap[baliseID].baliseKm);
+        else
+            baliseID+="-1";
+    }
+    else
         baliseID[baliseID.size()-1] = '1';
 	if (baliseLocationUpMap.find(baliseID) != baliseLocationUpMap.end())
-	{
 		return DesignData::ConvertKmStr2Num(baliseLocationUpMap[baliseID].baliseKm);
-	}
 	else if (baliseLocationDownMap.find(baliseID) != baliseLocationDownMap.end())
-	{
 		return DesignData::ConvertKmStr2Num(baliseLocationDownMap[baliseID].baliseKm);
-	}
     return -1;
 }
 
@@ -239,7 +245,7 @@ QString DesignData::FindBaliseRemarkByID(QString baliseID)
 	}
 	else if (baliseLocationDownMap.find(tempString) != baliseLocationDownMap.end())
 	{
-        return baliseLocationUpMap[tempString].baliseKm;
+        return baliseLocationDownMap[tempString].remark_2;
 	}
 	return "";
 }

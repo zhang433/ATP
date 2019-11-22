@@ -1,7 +1,4 @@
-﻿#ifdef _MSC_VER
-#pragma execution_character_set("utf-8")
-#endif
-#pragma once
+﻿#pragma once
 #include "Command.h"
 #include <QObject>
 #include <QTcpSocket>

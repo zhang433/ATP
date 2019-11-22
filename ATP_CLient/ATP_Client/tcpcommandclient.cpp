@@ -4,7 +4,7 @@
 TcpCommandClient::TcpCommandClient():
     TcpAbstract (QHostAddress(ARM_IP),12300)
 {
-    //ÃüÁîÁ¬½ÓÊÇ¿ÉÒÔ·¢ËÍÊý¾ÝµÄ
+    //????????????
     connect(this, &TcpCommandClient::send, this, &TcpCommandClient::sendArray_SLOT,Qt::QueuedConnection);
     connect(this, &TcpCommandClient::init, this, &TcpCommandClient::startConnect,Qt::QueuedConnection);
 	connect(this, &TcpCommandClient::stateChanged, this, &TcpCommandClient::changeStatus_SLOT);
@@ -19,12 +19,11 @@ TcpCommandClient::~TcpCommandClient()
 void TcpCommandClient::changeStatus_SLOT(QAbstractSocket::SocketState state)
 {
 	if (state == QAbstractSocket::UnconnectedState)
-		emit UpdateMainWondowStatue_SIGNAL("ÃüÁî:Î´Á¬½Ó", "QLabel{ color: red }", STATUS_BAR::COMMAND_SATUS);
+        emit UpdateMainWondowStatue_SIGNAL("å‘½ä»¤:æœªè¿žæŽ¥", "QLabel{ color: red }", STATUS_BAR::COMMAND_SATUS);
 	else if (state == QAbstractSocket::ConnectedState)
 	{
-		emit UpdateMainWondowStatue_SIGNAL("ÃüÁî:ÒÑÁ¬½Ó", "QLabel{ color: green }", STATUS_BAR::COMMAND_SATUS);
+        emit UpdateMainWondowStatue_SIGNAL("å‘½ä»¤:å·²è¿žæŽ¥", "QLabel{ color: green }", STATUS_BAR::COMMAND_SATUS);
 		HeartbeatTimeout_SLOT();
-		// Á¬½Ó³É¹¦ºóÏÈ¸æÖª¶Ô·½×Ô¼ºµÄÁ¬½ÓÊôÐÔ
         sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::CLIENT, CMD_TYPE::CONTROL, CMD_NAME::SOCKET_TYPE), static_cast<quint8>(COMMAND_SOCKET)));
 	}
 }
@@ -33,7 +32,7 @@ void TcpCommandClient::decodeBuffer(QDataStream& QDS)
 {
 	static QString BackColor;
     QDS >> TH;
-    if (TH.cmd_from == CMD_FROM::RECEIVER)//´Ó¹¤¿Ø»úÀ´µÄÊý¾Ý
+    if (TH.cmd_from == CMD_FROM::RECEIVER)
     {
         if (TH.cmd_type == CMD_TYPE::CONTROL)
         {
@@ -46,7 +45,7 @@ void TcpCommandClient::decodeBuffer(QDataStream& QDS)
             {
                 QString Sequence;
                 QDS >> Sequence;
-                emit UpdateMainWondowStatue_SIGNAL("³µ´Î:"+Sequence, "QLabel{ color: green }",STATUS_BAR::TRAIN_SEQUENCE);
+                emit UpdateMainWondowStatue_SIGNAL("è½¦æ¬¡:"+Sequence, "QLabel{ color: green }",STATUS_BAR::TRAIN_SEQUENCE);
                 break;
             }
             case CMD_NAME::LIST_FILE:
@@ -59,13 +58,13 @@ void TcpCommandClient::decodeBuffer(QDataStream& QDS)
 				qint8 p1;
 				QDS >> p1;
 				BackColor = (p1 <= 20 ? "QLabel{ color: red }" : "QLabel{ color: green }");
-				emit UpdateMainWondowStatue_SIGNAL("µçÁ¿:" + QString::number(p1) + "%", BackColor, STATUS_BAR::BETTERY_STATUS);
+				emit UpdateMainWondowStatue_SIGNAL("??:" + QString::number(p1) + "%", BackColor, STATUS_BAR::BETTERY_STATUS);
                 break;
 			case CMD_NAME::SD_PERSENT:
 				qreal p2;
 				QDS >> p2;
 				BackColor = (p2 >= 80 ? "QLabel{ color: red }" : "QLabel{ color: green }");
-				emit UpdateMainWondowStatue_SIGNAL("SD¿¨:" + QString::number(p2,'f',2)+"%", BackColor, STATUS_BAR::SD_CAPACITY);
+				emit UpdateMainWondowStatue_SIGNAL("SD?:" + QString::number(p2,'f',2)+"%", BackColor, STATUS_BAR::SD_CAPACITY);
 				break;
             }
         }
@@ -99,7 +98,7 @@ void inline TcpCommandClient::ProcessingCommand_DATA_SHEET(QDataStream& ds)
             if (var.sheetName == (fileName + sheetName))
             {
                 var.isReturn = true;
-                emit HasReturn2Sheet_SIGNAL(fileName + " " + sheetName + "´«Êä³É¹¦");
+                emit HasReturn2Sheet_SIGNAL(fileName + " " + sheetName + "????");
             }
         }
         sheetMutex.unlock();
@@ -118,13 +117,13 @@ void inline TcpCommandClient::ProcessingCommand_GET_SELECTED_FILE(QDataStream& d
 {
     QString arg;
     ds >> arg;
-    if (arg == "report")//Éú³É±¨±íµÄ·þÎñ
+    if (arg == "report")//???????
     {
         QVector<SequenceDataStructure> V_SDS;
         ds >> V_SDS;
         emit GetSelectedFile_SIGNAL(V_SDS);
     }
-    else if (arg == "data")//»Ø¶ÁÊý¾Ý·þÎñ
+    else if (arg == "data")//??????
     {
         QByteArray QBA;
         ds >> QBA;
@@ -155,6 +154,6 @@ void TcpCommandClient::startConnect()
 
 void TcpCommandClient::HeartbeatTimeout_SLOT()
 {
-    this->sendArray_SLOT(heartBeatBuffer);//´Ë´¦ÓÐ¿ÉÄÜ»áÔÚsocketÁ¬½Ó¹Ø±ÕºóÖ´ÐÐ
+    this->sendArray_SLOT(heartBeatBuffer);//???????socket???????
 }
 

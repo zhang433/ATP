@@ -23,6 +23,8 @@ SOURCES += \
     ../../Common/basestructer.cpp \
     ../../Common/Command.cpp \
     ../../Common/designdata.cpp \
+    baliselocation.cpp \
+    balisestation.cpp \
     inner_tcp_client.cpp \
     main.cpp \
     compareresdata_thread.cpp \
@@ -40,6 +42,8 @@ HEADERS += \
     ../../Common/analyze_resmessage.h \
     ../../Common/basestructer.h \
     ../../Common/designdata.h \
+    baliselocation.h \
+    balisestation.h \
     compareresdata_thread.h \
     inner_tcp_client.h \
     self_define.h

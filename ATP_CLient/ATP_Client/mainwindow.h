@@ -1,9 +1,4 @@
-﻿#ifdef _MSC_VER
-#pragma execution_character_set("utf-8")
-#endif
-#pragma once
-//#define ARM_IP "10.42.0.1"
-#define ARM_IP "127.0.0.1"
+﻿#pragma once
 #include <QtGlobal>
 #include <QMainWindow>
 #include <vector>
@@ -26,6 +21,7 @@
 #include "callout.h"
 #include "getreport_dialog.h"
 
+extern QString ARM_IP;
 
 enum STATUS_BAR {
 	COMMAND_SATUS=0,
@@ -66,7 +62,7 @@ public slots:
 	void ReDraw_MainWindow();
     void UpdateView(RealTimeDatastructure& RTD);
     void UpdateBaliseCompareResult(RealTimeDatastructure& RTD);//各栏添加比对记录
-	void UpdateTabWidget_udp(const QVector<QVector<QString> > &result, CompareType compareType);
+    void UpdateTabWidget_udp(const QVector<QVector<QString> > &result, CompareType compareType,qint64 timepoint);
 	void UpdateTabWidget_click(const QVector<QVector<QString> > &result, CompareType compareType);
 
 private slots:
@@ -99,7 +95,27 @@ private slots:
 
     void on_ImportATPFiles_MENU_triggered();
 
+    void on_GetLocalData_MENU_triggered();
+
     void on_ConfigUserInfo_MENU_triggered();
+
+    void on_IPConfig_MENU_triggered();
+    void on_listWidget_baliseLocation_compare_history_doubleClicked(const QModelIndex &index);
+
+    void on_listWidget_trackCircuit_compare_history_doubleClicked(const QModelIndex &index);
+
+    void on_listWidget_speed_compare_history_doubleClicked(const QModelIndex &index);
+
+    void on_listWidget_grade_compare_history_doubleClicked(const QModelIndex &index);
+
+    void on_listWidget_station_compare_history_doubleClicked(const QModelIndex &index);
+
+    void on_listWidget_neutralSection_compare_history_doubleClicked(const QModelIndex &index);
+
+    void on_listWidget_temporySpeed_history_doubleClicked(const QModelIndex &index);
+
+protected:
+    void closeEvent(QCloseEvent * event) override;
 
 private:
     static const QString DMS_DONGZUOMOSHI_LIST[20];
@@ -138,4 +154,7 @@ private:
     QVector<QVector<QVector<QString> > > m_e_track_station_list;
     QVector<QVector<QVector<QString> > > m_e_neutral_section_list;
     QVector<QVector<QVector<QString> > > m_e_temporary_speed_list;
+
+    QMap<CompareType,QVector<qint64>> timePointMap;
+    bool move_frame = true;
 };

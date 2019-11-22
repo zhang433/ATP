@@ -36,10 +36,11 @@ class ChartView : public QChartView
 public:
 	/************用户调用接口**********************/
     ChartView(QWidget *parent);//构造函数
-	void UpdateView(const RealTimeDatastructure& RTD);//示图更新函数
+    void UpdateView(const RealTimeDatastructure& RTD,bool move_frame);//示图更新函数
 	static void getDataFromFile(qint64 pos,RealTimeDatastructure* RTD);//从指定位置读取RTD变量
 	static QMutex m_mutex;//读取文件改变文件指针位置时用于保护临界区，防止多线程同时读写
 	void clear();//清理视图中的图标和画线信息
+    void moveCenturalToPoint(qreal x);//把视图移到以pos为中心的位置
 signals:
 	void AnalysisInfoClick_SIGNAL(qint64);
 private:
@@ -97,8 +98,7 @@ private:
 	void UpdateBalishRecord(const RealTimeDatastructure&);//用于更新3个应答器最新位置序列
 	void UpdateRBCRecord(const RealTimeDatastructure&);//用于更新RBC最新位置序列
 	void UpdateFreRecord(const RealTimeDatastructure&);//用于更新载频最新位置序列
-	void moveCenturalToPoint(qreal x);//把视图移到以pos为中心的位置
-	void updateAllLine();//更新视图中的所有曲线，如果时间戳在显示区间内就直接更新，否则就忽略
+    void updateAllLine(bool move_frame);//更新视图中的所有曲线，如果时间戳在显示区间内就直接更新，否则就忽略
 	
 
 	double m_static_lastspeed[4];

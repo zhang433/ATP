@@ -1,7 +1,4 @@
-﻿#ifdef _MSC_VER
-#pragma execution_character_set("utf-8")
-#endif
-#pragma once
+﻿#pragma once
 /**********************************************
  * @功能：此类主要存储导入的列控数据
  * @作者：hb
@@ -40,8 +37,8 @@ public:
     static QVector<PathWaySpeed> pathWaySpeedDownBackVec; //线路速度表-下行反向
     static QVector<PathWaySpeed> pathWaySpeedUpBackVec;   //线路速度表-上行反向
 
-	static QMap<QString,BaliseLocation> baliseLocationUpMap; //应答器位置表-上行
-	static QMap<QString, BaliseLocation> baliseLocationDownMap; //应答器位置表-下行
+    static QMap<QString,BalisePosition> baliseLocationUpMap; //应答器位置表-上行
+    static QMap<QString, BalisePosition> baliseLocationDownMap; //应答器位置表-下行
     static QMap<QString, QString> balishUseMap;
 
     static QVector<BrokenLink> brokenLinkVec;             //里程断链明细表

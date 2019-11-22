@@ -20,12 +20,12 @@ std::string CBC_AESEncryptStr(std::string sKey, std::string sIV, const char* pla
 {
 	std::string outstr;
 
-	//Ìîkey    
+	//å¡«key    
 	SecByteBlock key(AES::MAX_KEYLENGTH);
 	memset(key, 0x30, key.size());
 	sKey.size() <= AES::MAX_KEYLENGTH ? std::memcpy(key, sKey.c_str(), sKey.size()) : std::memcpy(key, sKey.c_str(), AES::MAX_KEYLENGTH);
 
-	//Ìîiv    
+	//å¡«iv    
 	byte iv[AES::BLOCKSIZE];
 	memset(iv, 0x30, AES::BLOCKSIZE);
 	sIV.size() <= AES::BLOCKSIZE ? std::memcpy(iv, sIV.c_str(), sIV.size()) : std::memcpy(iv, sIV.c_str(), AES::BLOCKSIZE);
@@ -45,12 +45,12 @@ std::string CBC_AESDecryptStr(std::string sKey, std::string sIV, const char* cip
 {
 	std::string outstr;
 
-	//Ìîkey    
+	//å¡«key    
 	SecByteBlock key(AES::MAX_KEYLENGTH);
 	memset(key, 0x30, key.size());
 	sKey.size() <= AES::MAX_KEYLENGTH ? std::memcpy(key, sKey.c_str(), sKey.size()) : std::memcpy(key, sKey.c_str(), AES::MAX_KEYLENGTH);
 
-	//Ìîiv    
+	//å¡«iv    
 	byte iv[AES::BLOCKSIZE];
 	memset(iv, 0x30, AES::BLOCKSIZE);
 	sIV.size() <= AES::BLOCKSIZE ? std::memcpy(iv, sIV.c_str(), sIV.size()) : std::memcpy(iv, sIV.c_str(), AES::BLOCKSIZE);
@@ -69,32 +69,32 @@ int main(int argc, char* argv[])
 {
 	string key = "123456";
 	string iv = "654321";
-	po::options_description desc("Allowed options");//ÃüÁî±íÊöÃû³Æ
-	desc.add_options()//Ìí¼ÓÃüÁîÑ¡Ïî
+	po::options_description desc("Allowed options");//å‘½ä»¤è¡¨è¿°åç§°
+	desc.add_options()//æ·»åŠ å‘½ä»¤é€‰é¡¹
 		("help,h", "produce help message")
 		("encode,e", po::value<string>(), "input string")
 		("decode", po::value<string>(), "input string")
 		("key", po::value<string>(), "change encryption/decryption key to specified string")
 		("iv", po::value<string>(), "change initilize vector to specified string");
-	po::variables_map vm;//ÊäÈëÓë¾ßÌåÃüÁîÑ¡ÏîµÄÓ³Éä
+	po::variables_map vm;//è¾“å…¥ä¸å…·ä½“å‘½ä»¤é€‰é¡¹çš„æ˜ å°„
 	try
 	{
 		po::store(po::parse_command_line(argc, argv, desc), vm);
 		po::notify(vm);
 	}
-	catch (std::exception& ex)//Òì³£´¦Àí
+	catch (std::exception& ex)//å¼‚å¸¸å¤„ç†
 	{
 		std::cout << ex.what() << std::endl;
-		return -1;//ÊäÈë²ÎÊıÎ´Í¨¹ı¼ì²é
+		return -1;//è¾“å…¥å‚æ•°æœªé€šè¿‡æ£€æŸ¥
 	}
-	//¼ì²âÊÇ·ñÓĞÊäÈë
+	//æ£€æµ‹æ˜¯å¦æœ‰è¾“å…¥
 	if (!vm.count("encode") && !vm.count("decode"))
 		return -2;
 	if (vm.count("key"))
 		key = vm["key"].as<string>();
 	if (vm.count("iv"))
 		iv = vm["iv"].as<string>();
-	//Ö´ĞĞ×ª»»
+	//æ‰§è¡Œè½¬æ¢
 	string input;
 	string output;
 	try {

@@ -11,14 +11,14 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>ATPClient_0.9.0</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_17">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>7</number>
       </property>
       <widget class="QWidget" name="Main_ATB">
        <attribute name="title">
@@ -791,36 +791,6 @@ background-color:rgb(255, 0, 0);</string>
                 <attribute name="verticalHeaderVisible">
                  <bool>false</bool>
                 </attribute>
-                <column>
-                 <property name="text">
-                  <string>应答器公里标差值</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>D_LINK值</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>匹配结果</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>ATP测距误差</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>匹配结果</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>误差范围</string>
-                 </property>
-                </column>
                </widget>
               </item>
              </layout>
@@ -1220,7 +1190,7 @@ background-color:rgb(255, 0, 0);</string>
             </item>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_43">
-              <item alignment="Qt::AlignHCenter">
+              <item>
                <widget class="QLabel" name="label_grade_compare_2">
                 <property name="text">
                  <string>坡度信息比对</string>
@@ -1230,56 +1200,11 @@ background-color:rgb(255, 0, 0);</string>
               <item>
                <widget class="QTableWidget" name="tableWidget_grade_compare_info">
                 <property name="columnCount">
-                 <number>9</number>
+                 <number>0</number>
                 </property>
                 <attribute name="verticalHeaderVisible">
                  <bool>false</bool>
                 </attribute>
-                <column>
-                 <property name="text">
-                  <string>终点公里标(应答器)</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>终点公里标(表)</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>比对结果</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>长度(应答器)</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>长度(表)</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>比对结果</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>坡度(应答器)</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>坡度(表)</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>比对结果</string>
-                 </property>
-                </column>
                </widget>
               </item>
              </layout>
@@ -1367,7 +1292,7 @@ background-color:rgb(255, 0, 0);</string>
                 </property>
                 <widget class="QWidget" name="tab_25">
                  <attribute name="title">
-                  <string>车站信息比对</string>
+                  <string>车站名&amp;站台侧</string>
                  </attribute>
                  <layout class="QHBoxLayout" name="horizontalLayout_39">
                   <item>
@@ -1375,110 +1300,6 @@ background-color:rgb(255, 0, 0);</string>
                     <attribute name="verticalHeaderVisible">
                      <bool>false</bool>
                     </attribute>
-                    <column>
-                     <property name="text">
-                      <string>车站名(应答器)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>车站名(表)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>匹配结果</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>大区编号(应答器)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>大区编号(表)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>匹配结果</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>小区编号(应答器)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>小区编号(表)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>匹配结果</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>车站编号(应答器)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>车站编号(表)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>匹配结果</string>
-                     </property>
-                    </column>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-                <widget class="QWidget" name="tab_26">
-                 <attribute name="title">
-                  <string>站台侧信息比对</string>
-                 </attribute>
-                 <layout class="QHBoxLayout" name="horizontalLayout_40">
-                  <item>
-                   <widget class="QTableWidget" name="tableWidget_stationSide_compare_info">
-                    <attribute name="verticalHeaderVisible">
-                     <bool>false</bool>
-                    </attribute>
-                    <column>
-                     <property name="text">
-                      <string>当前车站名</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>车站名(表)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>当前应答器名称</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>应答器编号(表)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>站台侧</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>站台侧(表)</string>
-                     </property>
-                    </column>
                    </widget>
                   </item>
                  </layout>
@@ -1585,36 +1406,6 @@ background-color:rgb(255, 0, 0);</string>
                 <attribute name="verticalHeaderVisible">
                  <bool>false</bool>
                 </attribute>
-                <column>
-                 <property name="text">
-                  <string>起点位置(应答器)</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>起点位置(表)</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>比对结果 / 误差</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>终点位置(应答器)</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>终点位置(表)</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>比对结果  / 误差</string>
-                 </property>
-                </column>
                </widget>
               </item>
              </layout>
@@ -1656,23 +1447,7 @@ background-color:rgb(255, 0, 0);</string>
              </widget>
             </item>
             <item>
-             <widget class="QTableWidget" name="tableWidget_temporySpeed_info">
-              <column>
-               <property name="text">
-                <string>起点位置</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>终点位置</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>速度km/h</string>
-               </property>
-              </column>
-             </widget>
+             <widget class="QTableWidget" name="tableWidget_temporySpeed_info"/>
             </item>
            </layout>
           </item>
@@ -1704,7 +1479,7 @@ background-color:rgb(255, 0, 0);</string>
      <x>0</x>
      <y>0</y>
      <width>1237</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -1716,6 +1491,7 @@ background-color:rgb(255, 0, 0);</string>
     <addaction name="GetRepotr_MENU"/>
     <addaction name="SetTrainNumber_MENU"/>
     <addaction name="ClearLocal"/>
+    <addaction name="GetLocalData_MENU"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -1723,6 +1499,7 @@ background-color:rgb(255, 0, 0);</string>
     </property>
     <addaction name="ConfigUserInfo_MENU"/>
     <addaction name="action"/>
+    <addaction name="IPConfig_MENU"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -1767,6 +1544,16 @@ background-color:rgb(255, 0, 0);</string>
   <action name="action">
    <property name="text">
     <string>设备授权</string>
+   </property>
+  </action>
+  <action name="GetLocalData_MENU">
+   <property name="text">
+    <string>加载本地数据</string>
+   </property>
+  </action>
+  <action name="IPConfig_MENU">
+   <property name="text">
+    <string>连接IP设置</string>
    </property>
   </action>
  </widget>

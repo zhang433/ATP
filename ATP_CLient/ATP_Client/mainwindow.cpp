@@ -11,6 +11,7 @@
 #include <fstream>
 #include <math.h>
 #include <time.h>
+#include <QFileDialog>
 #include <QPainter>
 #include <QThread>
 #include <QMouseEvent>
@@ -26,6 +27,9 @@
 #include "tcpcommandclient.h"
 #include "choosedesignfiles_dialog.h"
 #include "usermanagementui.h"
+
+//QString ARM_IP = "127.0.0.1";
+QString ARM_IP = "192.168.2.1";
 
 const QString MainWindow::DMS_DONGZUOMOSHI_LIST[20] = { "FS[完全监控]","PS[部分监控]","RO[反向运行]","CO[引导]","CS[机车信号]","BF[应答器故障]","OS[目视]","SR[人控]","SH[调车]","UN[未装备]","SL[休眠]","SB[待机]","TR[冒进]","PT[冒进后]","SF[系统故障]","IS[隔离]","NL[非本务]","SE[欧洲 STM]","SN[国家 STM]","RV[退行]" };
 const QString MainWindow::DMS_ZAIPIN_LIST[10] = { "Unknow","0","550","650","750","850","1700","2000","2300","2600" };
@@ -223,11 +227,16 @@ void MainWindow::ReDraw_MainWindow()
 		}
 	};
 
+    //int count = 0;
 	for (auto & input : V_RTD)
 	{
-		ui->Draw_FRAME->UpdateView(input);//更新视图
+        ui->Draw_FRAME->UpdateView(input,move_frame);//更新视图
+//        if(loadOldData && ++count%100==0)
+//            QApplication::processEvents();
 	}
-
+    if(!move_frame)
+        ui->Draw_FRAME->moveCenturalToPoint(V_RTD.back().IPCTimestamp);
+    move_frame = true;
 	UpdateRTD(static_RTD, V_RTD.back());
 	UpdateView(static_RTD);
 }
@@ -615,51 +624,41 @@ QVector<QString> MainWindow::AnalysisDMS_RTD2String(const RealTimeDatastructure&
 
 void MainWindow::UpdateBaliseCompareResult(RealTimeDatastructure &RTD)
 {
-    //if(!RTD.Has_200C_DATA)
-    //{
-    //    /***********记录一帧绘图信息************************************************************************/
-    //    if(RTD.ATPTimestamp>0)
-    //    {
-
-    //    }
-
-    //    /*************************************************************************************************/
-    //}
     resultVec.clear();
     resultVec = RTD.Compare_Result;
     if (resultVec[0].size())
     {
-        UpdateTabWidget_udp(resultVec[0], C_YINGDAQIWEIZHI);
+        UpdateTabWidget_udp(resultVec[0], C_YINGDAQIWEIZHI, RTD.IPCTimestamp);
         m_balise_location_list.push_back(resultVec[0]);
     }
     if(resultVec[1].size())
     {
-        UpdateTabWidget_udp(resultVec[1], C_XIANLUPODU);
+        UpdateTabWidget_udp(resultVec[1], C_XIANLUPODU, RTD.IPCTimestamp);
         m_grade_list.push_back(resultVec[1]);
     }
     if (resultVec[2].size())
     {
-        UpdateTabWidget_udp(resultVec[2], C_XIANLUSUDU);
+        UpdateTabWidget_udp(resultVec[2], C_XIANLUSUDU, RTD.IPCTimestamp);
         m_speed_list.push_back(resultVec[2]);
     }
     if (resultVec[3].size())
     {
-        UpdateTabWidget_udp(resultVec[3], C_FENXIANGQU);
+        UpdateTabWidget_udp(resultVec[3], C_FENXIANGQU, RTD.IPCTimestamp);
         m_neutral_section_list.push_back(resultVec[3]);
     }
     if (resultVec[4].size())
     {
-        UpdateTabWidget_udp(resultVec[4], C_CHEZHAN);
+        UpdateTabWidget_udp(resultVec[4], C_CHEZHAN, RTD.IPCTimestamp);
         m_track_station_list.push_back(resultVec[4]);
     }
     if (resultVec[5].size())
     {
-        UpdateTabWidget_udp(resultVec[5], C_GUIDAODIANLU);
+        UpdateTabWidget_udp(resultVec[5], C_GUIDAODIANLU, RTD.IPCTimestamp);
         m_track_circuit_list.push_back(resultVec[5]);
     }
     if (resultVec[6].size())
     {
-        UpdateTabWidget_udp(resultVec[6], C_LINSHIXIANSU);
+        UpdateTabWidget_udp(resultVec[6], C_LINSHIXIANSU, RTD.IPCTimestamp);
         m_temporary_speed_list.push_back(resultVec[6]);
     }
 
@@ -678,7 +677,7 @@ void MainWindow::UpdateBaliseCompareResult(RealTimeDatastructure &RTD)
 * @作者：hb
 * @修改日期：
 **********************************************************/
-void MainWindow::UpdateTabWidget_udp(const QVector<QVector<QString> > &result, CompareType compareType)
+void MainWindow::UpdateTabWidget_udp(const QVector<QVector<QString> > &result, CompareType compareType, qint64 timepoint)
 {
     QString errorStr = "";
     QListWidget *listWidget_temp = NULL;
@@ -694,33 +693,25 @@ void MainWindow::UpdateTabWidget_udp(const QVector<QVector<QString> > &result, C
     case C_GUIDAODIANLU:
         listWidget_temp = ui->listWidget_trackCircuit_compare_history;
         errorStr = timeStr + "     码序错误";
-        list_name += result[0][2];
         break;
     case C_XIANLUSUDU:
         listWidget_temp = ui->listWidget_speed_compare_history;
         errorStr = timeStr + "     线路速度不一致";
-        list_name += result[0][2];
         break;
     case C_XIANLUPODU:
         listWidget_temp = ui->listWidget_grade_compare_history;
         errorStr = timeStr + "     线路坡度错误";
-        list_name += result[0][2];
-        break;
-    case C_LICHENG:
         break;
     case C_CHEZHAN:
         listWidget_temp = ui->listWidget_station_compare_history;
         errorStr = timeStr + "     车站或站台侧信息错误";
-        list_name += result[0][3];
         break;
     case C_FENXIANGQU:
         listWidget_temp = ui->listWidget_neutralSection_compare_history;
         errorStr = timeStr + "     分相区信息错误";
-        list_name += result[0][2];
         break;
     case C_LINSHIXIANSU:
         listWidget_temp = ui->listWidget_temporySpeed_history;
-        list_name += result[0][2];
         break;
     default: break;
     }
@@ -731,12 +722,11 @@ void MainWindow::UpdateTabWidget_udp(const QVector<QVector<QString> > &result, C
                 list_name, listWidget_temp);
     int count = listWidget_temp->count();
     listWidget_temp->insertItem(listWidget_temp->count(), listWidgetItem);
-    listWidget_temp->scrollToBottom();
-
+    timePointMap[compareType].push_back(timepoint);
     bool hasError = false;
     if (compareType == C_YINGDAQIWEIZHI || compareType == C_CHEZHAN )
     {
-        if (result[0][2] == "Wrong")
+        if (result[0][1] == "Wrong")
             hasError = true;
     }
     else
@@ -760,6 +750,7 @@ void MainWindow::UpdateTabWidget_udp(const QVector<QVector<QString> > &result, C
 
     if (hasError)
     {
+        listWidgetItem->setTextColor(Qt::red);
         //首页显示错误
         QListWidgetItem *listItem = new QListWidgetItem(errorStr);
         listItem->setBackgroundColor(QColor(255, 0, 0));
@@ -805,7 +796,7 @@ void MainWindow::UpdateTabWidget_udp(const QVector<QVector<QString> > &result, C
 **********************************************************/
 void MainWindow::UpdateTabWidget_click(const QVector<QVector<QString> > &result, CompareType compareType)
 {
-	if (result.size() == 0)
+    if (result.size() == 0 || result.size() == 1)
 	{
 		return;
 	}
@@ -827,18 +818,7 @@ void MainWindow::UpdateTabWidget_click(const QVector<QVector<QString> > &result,
 	case C_LICHENG:
 		break;
 	case C_CHEZHAN:
-		if (result.size() == 6)
-		{
-			tableWidget_temp = ui->tableWidget_station_compare_info;
-			ui->tabWidget_2->setCurrentIndex(0);
-		}
-		else if (result.size() == 5)
-		{
-			tableWidget_temp = ui->tableWidget_stationSide_compare_info;
-			ui->tabWidget_2->setCurrentIndex(1);
-		}
-		else
-			qDebug() << "车站名比对返回信息无匹配的选项卡";
+        tableWidget_temp = ui->tableWidget_station_compare_info;
 		break;
 	case C_FENXIANGQU:
 		tableWidget_temp = ui->tableWidget_neutralSection_compare_info;
@@ -870,53 +850,39 @@ void MainWindow::UpdateTabWidget_click(const QVector<QVector<QString> > &result,
 			tableWidget_temp->setRowCount(result.size() - 3);
 		else
 			tableWidget_temp->setRowCount(result.size() - 2);
-		tableWidget_temp->setColumnCount(3);
+        tableWidget_temp->setColumnCount(result[0].size());
 		QStringList header;
 		int header_index = 1;
 		if (compareType != C_YINGDAQIWEIZHI && compareType != C_CHEZHAN)//[0] = 069-1-16-010-2
-			header_index++;
-		header << result[header_index][1] << result[header_index][2] << result[header_index][3];
+            header_index++;
+        for(int i=1;i< result[header_index].size();++i)
+            header << result[header_index][i];
 		header_index++;
 		tableWidget_temp->setHorizontalHeaderLabels(header);
 		header.clear();
-		for (int i = header_index; i < result.size(); ++i)
-		{
-			header << result[i][0];
-		}
+        for (int i = header_index; i < result.size(); ++i)
+            header << result[i][0];
 		tableWidget_temp->setVerticalHeaderLabels(header);
 		tableWidget_temp->verticalHeader()->show();
+        tableWidget_temp->setColumnCount(result[header_index].size()-1);
         for(int i = header_index; i < result.size(); i++)
         {
-            tableWidget_temp->setItem(i- header_index, 0, new QTableWidgetItem(result[i][1]));
-            tableWidget_temp->setItem(i- header_index, 1, new QTableWidgetItem(result[i][2]));
-            tableWidget_temp->setItem(i- header_index, 2, new QTableWidgetItem(result[i][3]));
-            if(tableWidget_temp->item(i- header_index, 2)->text().contains("不一致") || tableWidget_temp->item(i - header_index, 2)->text().contains("无匹配"))
+            for(int j=1;j<result[i].size();++j)
             {
-                tableWidget_temp->item(i - header_index, 2)->setBackgroundColor(QColor(Qt::red));
-            }
-        }
-    }
+                QString content = result[i][j];
+                bool errflag = false;
 
-    else
-    {
-        tableWidget_temp->setRowCount(result[2].size());
-        int columnCount = tableWidget_temp->columnCount();
-        for (int col = 0; col < columnCount; col++)
-        {
-            int rowCount = tableWidget_temp->rowCount();
-            for (int row = 0; row < rowCount; row++)
-            {
-                tableWidget_temp->
-                        setItem(row, col, new QTableWidgetItem(result[col + 1][row]));
-                if (col % 3 == 2) //填充到比对结果列
+                if(content.endsWith('W')||content.endsWith('R'))
                 {
-                    if (result[col + 1][row].contains("不一致") || result[col + 1][row] == "无匹配")
-                    {
-                        tableWidget_temp->item(row, col)->
-                                setBackgroundColor(QColor(255, 0, 0)); //设置背景色
-                    }
+                    if(content.endsWith('W'))
+                        errflag = true;
+                    content.resize(content.size()-1);
                 }
-
+                if(content.contains("不一致")||content.contains("无匹配"))
+                    errflag = true;
+                tableWidget_temp->setItem(i- header_index, j-1, new QTableWidgetItem(content));
+                if(errflag)
+                    tableWidget_temp->item(i - header_index, j-1)->setBackgroundColor(QColor(Qt::red));
             }
         }
     }
@@ -1179,13 +1145,14 @@ void MainWindow::on_ClearLocal_triggered()//清空本机数据
 	ui->listWidget_speed_compare_history->clear();
 	ui->tableWidget_grade_compare_info->clear();
 	ui->listWidget_grade_compare_history->clear();
-	ui->tableWidget_stationSide_compare_info->clear();
 	ui->listWidget_station_compare_history->clear();
 	ui->tableWidget_station_compare_info->clear();
 	ui->tableWidget_neutralSection_compare_info->clear();
 	ui->listWidget_neutralSection_compare_history->clear();
 	ui->tableWidget_temporySpeed_info->clear();
 	ui->listWidget_temporySpeed_history->clear();
+    //清除map对应的信息
+    timePointMap.clear();
 }
 
 void MainWindow::on_ImportATPFiles_MENU_triggered()
@@ -1199,4 +1166,128 @@ void MainWindow::on_ConfigUserInfo_MENU_triggered()
     static UserManagementUI* UMU = new UserManagementUI(UserName,this);
     UMU->refreshAllUser();
     UMU->show();
+}
+
+void MainWindow::on_GetLocalData_MENU_triggered()
+{
+    auto fileNameList = QFileDialog::getOpenFileNames(
+                this, "本地数据", "", "DMSDATA (*.dmsCompareData)");
+    if(fileNameList.size()!=1 || fileNameList.empty())
+    {
+        QMessageBox::information(this,"提示","输入只能为单一文件！");
+        return;
+    }
+    QFile file;
+    file.setFileName(fileNameList[0]);
+    file.open(QIODevice::ReadOnly);
+    if(!file.isOpen())
+    {
+        QMessageBox::information(this,"提示","文件读取失败！");
+        return;
+    }
+    auto QBA = file.readAll();
+    QDataStream QDS(&QBA,QIODevice::ReadOnly);
+    RealTimeDatastructure RTD;
+    //QMutexLocker locker(&MainWindow::m_static_mutex);
+    while (!QDS.atEnd())
+    {
+        QDS >> RTD;
+        MainWindow::RTD_Queue.push_back(RTD);
+    }
+    move_frame = false;
+    emit tcpCommandClient->ReDraw_MainWindow_SIGNAL();
+}
+
+void MainWindow::on_IPConfig_MENU_triggered()
+{
+    QString new_IP = QInputDialog::getText(this,"设置连接IP","请输入要连接的IP,输入框内容为当前设置的IP:",QLineEdit::Normal,ARM_IP);
+    auto sp = new_IP.split('.');
+    bool input_illegal = false;
+    if(sp.size()!=4)
+        input_illegal = true;
+    for(auto str:sp)
+    {
+        if(str.size()>3)
+        {
+            input_illegal = true;
+            break;
+        }
+        for(auto c:str)
+        {
+            if(!(c>='0'&&c<='9'))
+            {
+                input_illegal = true;
+                break;
+            }
+        }
+        if(input_illegal)
+            break;
+        bool ok = false;
+        int num = str.toInt(&ok);
+        if(!ok)
+        {
+            input_illegal = true;
+            break;
+        }
+        if(!(num>=0&&num<=255))
+        {
+            input_illegal = true;
+            break;
+        }
+    }
+    if(input_illegal)
+    {
+        QMessageBox::information(this,"提示","输入IP有误");
+        return;
+    }
+    ARM_IP = new_IP;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    exit(0);
+}
+
+void MainWindow::on_listWidget_baliseLocation_compare_history_doubleClicked(const QModelIndex &index)
+{
+    ui->tabWidget->setCurrentIndex(0);
+    ui->Draw_FRAME->moveCenturalToPoint(timePointMap[C_YINGDAQIWEIZHI][index.row()]);
+}
+
+
+
+void MainWindow::on_listWidget_trackCircuit_compare_history_doubleClicked(const QModelIndex &index)
+{
+    ui->tabWidget->setCurrentIndex(0);
+    ui->Draw_FRAME->moveCenturalToPoint(timePointMap[C_GUIDAODIANLU][index.row()]);
+}
+
+void MainWindow::on_listWidget_speed_compare_history_doubleClicked(const QModelIndex &index)
+{
+    ui->tabWidget->setCurrentIndex(0);
+    ui->Draw_FRAME->moveCenturalToPoint(timePointMap[C_XIANLUSUDU][index.row()]);
+}
+
+void MainWindow::on_listWidget_grade_compare_history_doubleClicked(const QModelIndex &index)
+{
+    ui->tabWidget->setCurrentIndex(0);
+    ui->Draw_FRAME->moveCenturalToPoint(timePointMap[C_XIANLUPODU][index.row()]);
+}
+
+void MainWindow::on_listWidget_station_compare_history_doubleClicked(const QModelIndex &index)
+{
+    ui->tabWidget->setCurrentIndex(0);
+    ui->Draw_FRAME->moveCenturalToPoint(timePointMap[C_CHEZHAN][index.row()]);
+}
+
+void MainWindow::on_listWidget_neutralSection_compare_history_doubleClicked(const QModelIndex &index)
+{
+    ui->tabWidget->setCurrentIndex(0);
+    ui->Draw_FRAME->moveCenturalToPoint(timePointMap[C_FENXIANGQU][index.row()]);
+}
+
+void MainWindow::on_listWidget_temporySpeed_history_doubleClicked(const QModelIndex &index)
+{
+    ui->tabWidget->setCurrentIndex(0);
+    ui->Draw_FRAME->moveCenturalToPoint(timePointMap[C_LINSHIXIANSU][index.row()]);
 }

@@ -4,7 +4,7 @@
 TcpDataClient::TcpDataClient():
     TcpAbstract (QHostAddress(ARM_IP),12300)
 {
-    //Á¬½Ó³É¹¦ºóÏÈ¸æÖª¶Ô·½×Ô¼ºµÄÁ¬½ÓÊôĞÔ
+    //?????????????????
     connect(this, &TcpDataClient::init, this, &TcpDataClient::startConnect,Qt::QueuedConnection);
 	connect(this, &TcpDataClient::stateChanged, this, &TcpDataClient::changeStatus_SLOT,Qt::QueuedConnection);
 	HeartbeatTimeout_SLOT();
@@ -17,11 +17,10 @@ TcpDataClient::~TcpDataClient()
 void TcpDataClient::changeStatus_SLOT(QAbstractSocket::SocketState state)
 {
 	if (state == QAbstractSocket::UnconnectedState)
-		emit UpdateMainWondowStatue_SIGNAL("Êı¾İ:Î´Á¬½Ó", "QLabel{ color: red }", STATUS_BAR::DATA_STATUS);
+        emit UpdateMainWondowStatue_SIGNAL("æ•°æ®:æœªè¿æ¥", "QLabel{ color: red }", STATUS_BAR::DATA_STATUS);
 	else if (state == QAbstractSocket::ConnectedState)
 	{
-		emit UpdateMainWondowStatue_SIGNAL("Êı¾İ:ÒÑÁ¬½Ó", "QLabel{ color: green }", STATUS_BAR::DATA_STATUS);
-		//Á¬½Ó³É¹¦ºóÏÈ¸æÖª¶Ô·½×Ô¼ºµÄÁ¬½ÓÊôĞÔ
+        emit UpdateMainWondowStatue_SIGNAL("æ•°æ®:å·²è¿æ¥", "QLabel{ color: green }", STATUS_BAR::DATA_STATUS);
 		HeartbeatTimeout_SLOT();
         sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::CLIENT, CMD_TYPE::CONTROL, CMD_NAME::SOCKET_TYPE), static_cast<quint8>(DATA_SOCKET)));
 	}
@@ -30,7 +29,7 @@ void TcpDataClient::changeStatus_SLOT(QAbstractSocket::SocketState state)
 void TcpDataClient::decodeBuffer(QDataStream& QDS)
 {
 	QDS >> TH;
-    if (TH.cmd_from == CMD_FROM::RECEIVER)//´Ó¹¤¿Ø»úÀ´µÄÊı¾İ
+    if (TH.cmd_from == CMD_FROM::RECEIVER)//????????
 	{
 		if (TH.cmd_type == CMD_TYPE::DATA)
 		{
@@ -42,8 +41,11 @@ void TcpDataClient::decodeBuffer(QDataStream& QDS)
 			case CMD_NAME::DMS_RBC:
 				QDS >> RTD;
 				{
+                    static qint64 lastIPCTimestamp = 0;
+                    assert(RTD.IPCTimestamp>lastIPCTimestamp);
+                    lastIPCTimestamp = RTD.IPCTimestamp;
 					QMutexLocker locker(&MainWindow::m_static_mutex);
-					MainWindow::RTD_Queue.push_back(RTD);//Ïß³Ì¼äÒì²½Ö´ĞĞ£¬Ê¹ÓÃ¶ÓÁĞÈ·±£Êı¾İ»ñÈ¡Ë³Ğò
+                    MainWindow::RTD_Queue.push_back(RTD);
 				}
 				emit ReDraw_MainWindow_SIGNAL();
 				break;
@@ -63,7 +65,7 @@ void TcpDataClient::decodeBuffer(QDataStream& QDS)
 
 void TcpDataClient::HeartbeatTimeout_SLOT()
 {
-    this->sendArray_SLOT(heartBeatBuffer);//´Ë´¦ÓĞ¿ÉÄÜ»áÔÚsocketÁ¬½Ó¹Ø±ÕºóÖ´ĞĞ
+    this->sendArray_SLOT(heartBeatBuffer);
 }
 
 void TcpDataClient::startConnect()

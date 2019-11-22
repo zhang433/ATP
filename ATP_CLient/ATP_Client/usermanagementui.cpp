@@ -1,5 +1,6 @@
 #include "usermanagementui.h"
 #include "ui_usermanagementui.h"
+#include <QDebug>
 
 QSettings UserManagementUI::REG("HKEY_CURRENT_USER\\Software\\ATPClient",QSettings::NativeFormat);
 QCryptographicHash UserManagementUI::MD5(QCryptographicHash::Md5);
@@ -139,7 +140,11 @@ bool UserManagementUI::isRegstered()
         return false;
     QString val = REG.value(".").toString();
     if(val!=Encode2MD5(getMacAndInstallTimeStr()))
+    {
+        qDebug()<<"val is "<<val;
+        qDebug()<<"aim is "<<Encode2MD5(getMacAndInstallTimeStr());
         return false;
+    }
     return true;
 }
 

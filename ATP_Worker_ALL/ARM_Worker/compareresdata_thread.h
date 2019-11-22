@@ -43,6 +43,7 @@ public:
 
 
 private:
+    QMap<QString,BalisePosition>& test = DesignData::baliseLocationUpMap;
 	QMap<Balish_Category, QString> Balish_Category2Str;
 
 	RealTimeDatastructure RTD;
@@ -51,7 +52,7 @@ private:
 	BalisePackage Temp_ETCS_5;
 	Analyze_ATPMessage *_AM = new Analyze_ATPMessage();
 
-	QQueue<Record_Baliseposition> ALGI;//AllLinkedGroupID，连接的所有应答器组
+    QList<Record_Baliseposition> ALGI;//AllLinkedGroupID，连接的所有应答器组
 	QString NBGI;//该变量的意思为NextBaliseGroupID，下一组链接应答器的编号
 	bool SideLineFlag = false;//用于指示是否要进行侧线的逻辑比对
 	bool New_BalishGroup = false;
@@ -66,11 +67,9 @@ private:
     int m_baliseLocation;
 	int sideLine_startSigKm;
 	int sideLine_endSigKm;
-	QString m_Station_Name;//用于存储最近经过的一个车站名
 
-	QQueue<Record_Baliseposition> LinkedBliseGroupID(BalisePackCollector& BPK); //获取本应答器的下一个连接应答器组的ID
-    QVector<QVector<QString> > Compare_BaliseLocation(int DataType); //比对应答器位置
-    QVector<QVector<QString> > Compare_TrackStation(int position); //比对车站名和站台侧
+    //QQueue<Record_Baliseposition> LinkedBliseGroupID(BalisePackCollector& BPK); //获取本应答器的下一个连接应答器组的ID
+    //QVector<QVector<QString> > Compare_BaliseLocation(int DataType); //比对应答器位置
     QVector<QVector<QString> > Compare_TrackCircuit(int position);//比对轨道电路
     QVector<QVector<QString> > Compare_NeutralSection(int position);//比对分相区 -逻辑验证通过
     QVector<QVector<QString> > Compare_Grade(int position); //比对坡度 -逻辑验证通过
@@ -79,6 +78,9 @@ private:
 
 	void judjeTrackCircuitCombine(QVector<PathWayData_Less> &pathWayData_LessVec, int &now_index, const int& length_balise, const QString& signalType_balise, const QString& fre_balise, 
 		int &length_combine, QString& signalType_combine, QString& fre_combine);
+
+    void JudgeSideLineBaliseGroup(const QList<QString>& Balises);
+    QString BaliseUseage(QString BaliseGroupNumber);
 
     QVector<QVector<QString> > Compare_Speed(int position); //比对线路速度 -逻辑验证通过
     QVector<QVector<QString> > Compare_TrackTemporarySpeedLimit(int position); //比对临时限速

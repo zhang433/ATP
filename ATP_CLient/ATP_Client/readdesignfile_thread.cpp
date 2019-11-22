@@ -343,7 +343,7 @@ bool ReadFileThread::listHandler(QAxObject* excel, QString fileName, FileType fi
 							for (unsigned int j = 0; j < temp_accessRode.sheet.size(); j++)
 							{
 								//两个判定条件：1，本条的应答器组编号和遍历找到的目标条的链接应答器组编号相同。2，本条的终端信号机的名称与目标条的始端信号机的名称相符
-								if (list_str[3] == temp_accessRode.sheet[j].balise.split("/")[0] && temp_accessRode.sheet[i].annunciatorEndName == temp_accessRode.sheet[j].annBeginName)
+                                if (list_str[3] == temp_accessRode.sheet[j].balise.split("/")[0] && temp_accessRode.sheet[i].annunciatorEndName == temp_accessRode.sheet[j].annBeginName && temp_accessRode.sheet[i].baliseID.mid(0,8)==temp_accessRode.sheet[j].baliseID.mid(0,8))
 									temp_accessRode.sheet[i].balise = temp_accessRode.sheet[j].baliseID.split("-")[3] + "/" + temp_accessRode.sheet[j].balise.split(",")[0].split("/")[1];
 							}
 						}
@@ -598,7 +598,7 @@ bool ReadFileThread::listHandler(QAxObject* excel, QString fileName, FileType fi
 
                     for(int k = 0; k <= endRow - startRow; k++)
                     {
-                        BaliseLocation baliseLocation;
+                        BalisePosition baliseLocation;
                         baliseLocation.ID = dataItemList.at(k).at(0).toString();
                         baliseLocation.baliseName = dataItemList.at(k).at(1).toString();
                         baliseLocation.baliseID = dataItemList.at(k).at(2).toString();

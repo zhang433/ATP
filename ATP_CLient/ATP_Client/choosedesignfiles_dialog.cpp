@@ -220,14 +220,6 @@ void ChooseDesignFiles_DIALOG::on_finishPushButton_clicked()
     {
         str += "短链明细表  ";
     }
-    if(zuobiaoxiNum == 0)
-    {
-        str += "坐标系信息表  ";
-    }
-    if(lichengNum == 0)
-    {
-        str += "里程信息表  ";
-    }
     if(zhantaiceNum == 0)
     {
         str += "站台侧信息表  ";

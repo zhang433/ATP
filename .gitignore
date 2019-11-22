@@ -1,0 +1,11 @@
+*
+!*/
+!*.gitignore
+!*.cpp
+!*.h
+moc_*.cpp
+ui_*.h
+moc_*.h
+!*.pro
+!*.ui
+!others/*.*

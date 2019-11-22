@@ -83,7 +83,7 @@ ChartView::ChartView(QWidget *parent) :
 	initBaliseBrushVec();
 	for (int i = 0; i < 4; i++)
 	{
-		//balishSeriersVec[i].setUseOpenGL();
+        //balishSeriersVec[i].setUseOpenGL();
 		balishSeriersVec[i].setBrush(baliseBrushVec[i]);
 		balishSeriersVec[i].setPen(QColor(Qt::transparent));
 		balishSeriersVec[i].setMarkerShape(QScatterSeries::MarkerShapeRectangle);
@@ -212,7 +212,7 @@ void ChartView::getDataFromFile(qint64 x, RealTimeDatastructure* RTD)
 	return;
 }
 
-void ChartView::UpdateView(const RealTimeDatastructure& RTD)
+void ChartView::UpdateView(const RealTimeDatastructure& RTD,bool move_frame)
 {
 	//写入文件并记录文件写入的位置
 	
@@ -238,7 +238,7 @@ void ChartView::UpdateView(const RealTimeDatastructure& RTD)
 	UpdateFreRecord(RTD);
 	//更新视图中的曲线
 	nowTimeStamp = RTD.IPCTimestamp;
-	updateAllLine();//CPU渲染时请将此操作设为间隔定时执行
+    updateAllLine(move_frame);//CPU渲染时请将此操作设为间隔定时执行
 }
 
 void ChartView::UpdateSpeed(const RealTimeDatastructure& RTD)
@@ -459,17 +459,17 @@ void ChartView::moveCenturalToPoint(qreal x)//把视图位置的中心移到最�
 void ChartView::mouseDoubleClickEvent(QMouseEvent *event)//恢复实时绘图模式
 {
 	//chart()->zoomReset();
-	if (event->button()&Qt::LeftButton)
-		moveCenturalToPoint(finalXPosition);
-	else if (event->button()&Qt::RightButton)
-	{
-		for (auto iter = l_Callout_show.begin(); iter != l_Callout_show.end(); ++iter)
-			(*iter)->hide();
-		l_Callout_hide.append(l_Callout_show);
-		l_Callout_show.clear();
-		if (tempTip == nullptr)
-			tempTip = l_Callout_hide.front();
-	}
+//	if (event->button()&Qt::LeftButton)
+//		moveCenturalToPoint(finalXPosition);
+//	else if (event->button()&Qt::RightButton)
+//	{
+//		for (auto iter = l_Callout_show.begin(); iter != l_Callout_show.end(); ++iter)
+//			(*iter)->hide();
+//		l_Callout_hide.append(l_Callout_show);
+//		l_Callout_show.clear();
+//		if (tempTip == nullptr)
+//			tempTip = l_Callout_hide.front();
+//	}
 }
 
 void ChartView::enterEvent(QEvent *)//鼠标移入事件
@@ -690,7 +690,7 @@ void ChartView::updateAllLine_cyclicity()
 	finalXPosition = nowTimeStamp;//记录上一个更新视图的坐标点
 }
 
-void ChartView::updateAllLine()
+void ChartView::updateAllLine(bool move_fram)
 {
 	auto refreshFreLine = [this]()->void{
 		if (freSeriersIndex - 1 >= 0 && freVec.size() - 2 >= 0)
@@ -749,11 +749,14 @@ void ChartView::updateAllLine()
 		}
 
 	}
-	if (finalXPosition <= mAxisX.max().toMSecsSinceEpoch())//否则如果是实时模式，即上一个坐标点在区间内，本次坐标点在区间外，就移动区间
-	{
-		if (nowTimeStamp >= mAxisX.max().toMSecsSinceEpoch())
-			moveCenturalToPoint(nowTimeStamp);//区间变化的槽函数会负责更新视图
-	}
+    if(move_fram)
+    {
+        if (finalXPosition <= mAxisX.max().toMSecsSinceEpoch())//否则如果是实时模式，即上一个坐标点在区间内，本次坐标点在区间外，就移动区间
+        {
+            if (nowTimeStamp >= mAxisX.max().toMSecsSinceEpoch())
+                moveCenturalToPoint(nowTimeStamp);//区间变化的槽函数会负责更新视图
+        }
+    }
 	finalXPosition = nowTimeStamp;//记录上一个更新视图的坐标点
 }
 

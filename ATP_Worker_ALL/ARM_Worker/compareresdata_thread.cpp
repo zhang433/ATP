@@ -10,6 +10,8 @@
 #include <QString>
 #include "inner_tcp_client.h"
 #include <QtAlgorithms>
+#include "baliselocation.h"
+#include "balisestation.h"
 using namespace std;
 
 //初始化静态成员
@@ -27,7 +29,7 @@ int secondSpecialLen = 230;
 CompareBaliseData_THREAD::CompareBaliseData_THREAD(QObject *parent) : QObject(parent),
 Balish_Category2Str{ {JZ,"JZ"},{FCZ,"FCZ"},{CZ,"CZ"},{FJZ,"FJZ"},{DW,"DW"},{FDW,"FDW"},{Q,"Q"},{FQ,"FQ"},{ZJ1,"ZJ1"},{FZJ1,"FZJ1"},{ZJ2,"ZJ2"},{FZJ2,"FZJ2"},{UNKNOWN_Balish_Category,"UNKNOWN_Balish_Category"} }
 {
-	resultVec.resize(7);
+    resultVec.resize(8);
 
 	g_TrainDirection = BACK;
 	g_LineDirection = DOWN;
@@ -192,7 +194,8 @@ void CompareBaliseData_THREAD::on_DMSTcp_DataCome(QByteArray datastream, quint8 
 				m_originBaliseBitMessage.type = (BaliseType)(m_originBaliseBitMessage.type | BaliseType::Active);
 			else;
 		else
-			qDebug() << "在应答器位置表中未找到应答器,应答器编号:" << m_Balise_IDstr;
+			qDebug() << "connot find Balish ID:" << m_Balise_IDstr;
+		qDebug() << "Balish ID:" << m_Balise_IDstr;
 		/*****************************************************************************************/
 		CompareBaliseData(1);
 		FillRTD_by_DMSData(RTD, datastream, type);
@@ -283,11 +286,16 @@ void CompareBaliseData_THREAD::on_UdpThread_DataCome(qint32 order, qint64 timest
 
 void CompareBaliseData_THREAD::CompareBaliseData(int DataType)
 {
+    static QList<QString> RecordBaliseGroup;
 	SideLineFlag = false;//侧线信息置空操作，如果侧线该变量不为空，则比对逻辑中会执行侧线的比对逻辑
 	m_baliseData_Package = Analyze_BaliseMessage::Resolve(m_originBaliseBitMessage);//解析原始数据获得应答器报文的解析结果
 	m_Balise_IDstr = Analyze_BaliseMessage::GetBaliseID(m_originBaliseBitMessage);//获取应答器标识号
 	m_Balise_GroupID = m_Balise_IDstr;
 	m_Balise_GroupID.resize(12);
+    if(RecordBaliseGroup.isEmpty()||m_Balise_GroupID!=RecordBaliseGroup.back())
+        RecordBaliseGroup.push_back(m_Balise_GroupID);
+    if(RecordBaliseGroup.size()>10)
+        RecordBaliseGroup.pop_front();
 
 	New_BalishGroup = false;
 	if (m_LastBalise_GroupID != m_Balise_GroupID)//应答器组内应答器ID相同，经过应答器组时进入判断
@@ -337,14 +345,6 @@ void CompareBaliseData_THREAD::CompareBaliseData(int DataType)
 		SideLineIndex = Balish_Category::UNKNOWN_Balish_Category;
 	}
 
-	if (SideLineIndex < Balish_Category::JZ || SideLineIndex > Balish_Category::FJZ)
-	{
-		SideLineInfo.clear();
-		SideLineInfoIn.clear();
-		SideLineInfoOut.clear();
-	}
-
-	//先进行应答器位置的比对，否则侧线应答器的逻辑判定较为复杂
 	//在这里建立order与g_TrainDirection的映射，在on_clickHistoryInfo中可通过直接查表获取列车运行方向
 	m_trainDirectionVec.append(g_TrainDirection);
 	m_baliseLocation = DesignData::FindBaliseKmByID(m_Balise_IDstr);//应答器位置
@@ -355,14 +355,8 @@ void CompareBaliseData_THREAD::CompareBaliseData(int DataType)
 	for (int i = 0; i < 7; i++)
 		resultVec[i].clear();
 
-	temp_result_vec = Compare_BaliseLocation(DataType);
-	if (temp_result_vec.size() != 0)
-	{
-		emit hasCompareResult_udp(temp_result_vec, C_YINGDAQIWEIZHI);
-		resultVec[0] = temp_result_vec;
-	}
 	//按顺序获取本应答器链接的所有应答器组的编号
-	QQueue<Record_Baliseposition> AllLinkedBalishGroup = LinkedBliseGroupID(m_baliseData_Package);
+    QList<Record_Baliseposition> AllLinkedBalishGroup = BaliseLocation::LinkedBliseGroupID(m_baliseData_Package);
 	if (!AllLinkedBalishGroup.isEmpty())
 		ALGI = AllLinkedBalishGroup;
 	//更新下一组链接的应答器组
@@ -469,9 +463,15 @@ void CompareBaliseData_THREAD::CompareBaliseData(int DataType)
 			SideLineInfoOut.clear();
 		}
 	}
-
 	qDebug() << "SideLineIndex" << Balish_Category2Str[SideLineIndex];
-
+    temp_result_vec = BaliseLocation::Compare(m_baliseData_Package,RecordBaliseGroup);
+    if (temp_result_vec.size() != 0)
+    {
+        emit hasCompareResult_udp(temp_result_vec, C_YINGDAQIWEIZHI);
+        resultVec[0] = temp_result_vec;
+    }
+    if(m_Balise_GroupID=="117-1-02-099")
+        qDebug()<<"stop";
 	positionVec = Analyze_BaliseMessage::GetPackagePosition("ETCS-44", m_baliseData_Package);
 	for (int i = 0; i < positionVec.size(); i++)
 	{
@@ -482,7 +482,6 @@ void CompareBaliseData_THREAD::CompareBaliseData(int DataType)
 			resultVec[5] = temp_result_vec;
 		}
 	}
-
 	positionVec = Analyze_BaliseMessage::GetPackagePosition("ETCS-27", m_baliseData_Package);
 	for (int i = 0; i < positionVec.size(); i++)
 	{
@@ -493,7 +492,6 @@ void CompareBaliseData_THREAD::CompareBaliseData(int DataType)
 			resultVec[2] = temp_result_vec;
 		}
 	}
-
 	positionVec = Analyze_BaliseMessage::GetPackagePosition("ETCS-21", m_baliseData_Package);
 	for (int i = 0; i < positionVec.size(); i++)
 	{
@@ -504,18 +502,12 @@ void CompareBaliseData_THREAD::CompareBaliseData(int DataType)
 			resultVec[1] = temp_result_vec;
 		}
 	}
-
-	positionVec = Analyze_BaliseMessage::GetPackagePosition("ETCS-72", m_baliseData_Package);
-	for (int i = 0; i < positionVec.size(); i++)
-	{
-		temp_result_vec = Compare_TrackStation(positionVec[i]);
-		if (temp_result_vec.size() != 0)
-		{
-			emit hasCompareResult_udp(temp_result_vec, C_CHEZHAN);
-			resultVec[4] = temp_result_vec;
-		}
-	}
-
+    temp_result_vec = BaliseStation::Compare(m_baliseData_Package,m_Balise_IDstr);
+    if (temp_result_vec.size() != 0)
+    {
+        emit hasCompareResult_udp(temp_result_vec, C_CHEZHAN);
+        resultVec[4] = temp_result_vec;
+    }
 	positionVec = Analyze_BaliseMessage::GetPackagePosition("ETCS-68", m_baliseData_Package);
 	for (int i = 0; i < positionVec.size(); i++)
 	{
@@ -526,7 +518,6 @@ void CompareBaliseData_THREAD::CompareBaliseData(int DataType)
 			resultVec[3] = temp_result_vec;
 		}
 	}
-
 	positionVec = Analyze_BaliseMessage::GetPackagePosition("ETCS-44", m_baliseData_Package);
 	for (int i = 0; i < positionVec.size(); i++)
 	{
@@ -537,279 +528,7 @@ void CompareBaliseData_THREAD::CompareBaliseData(int DataType)
 			resultVec[6] = temp_result_vec;
 		}
 	}
-}
-
-/**********************************************************
-* @功能：按顺序获取本应答器的链接应答器组的编号
-* @形参：解析后的应答器报文
-* @返回值： 本应答器的链接应答器组的编号
-			没有E5包和链接应答器时返回空的QVector
-* @备注：
-* @作者：txw
-* @修改日期：2018-2-27
-**********************************************************/
-QQueue<Record_Baliseposition> CompareBaliseData_THREAD::LinkedBliseGroupID(BalisePackCollector& BPK)
-{
-	QQueue<Record_Baliseposition> queue;
-	QVector<int> Index;
-	Index = Analyze_BaliseMessage::GetPackagePosition("ETCS-5", BPK);
-	if (!Index.isEmpty())
-	{
-		BalisePackage ETCS_5;
-		for (int i = 0; i < Index.size(); i++)//寻找与本次运行方向相符合的ETCS-5包
-		{
-			if ((m_baliseData_Package[Index[i]][2].value == g_TrainDirection) || (m_baliseData_Package[Index[i]][2].value == 2))
-			{
-				ETCS_5 = BPK[Index[i]];
-				break;
-			}
-		}
-		if(!ETCS_5.isEmpty())
-		{
-			double scale = 0.0;
-			switch (ETCS_5[4].value)
-			{
-			case 0:scale = 0.1; break;
-			case 1:scale = 1; break;
-			case 2:scale = 10; break;
-			default:break;
-			}
-			/********************************************下面根据ETCS5包的内容更新要比对的应答器列表*****************************************/
-			BalisePackage D_LINK_ItemCollector = Analyze_BaliseMessage::FindItem(QString("D_LINK"), ETCS_5);//按顺序获取该信息包中所有包含“D_LINK”字符的项
-			BalisePackage Temp_NID_C_ItemCollector = Analyze_BaliseMessage::FindItem("NID_C", ETCS_5);//不是ETCS5包中描述的每一个新的应答器组都具有地区编号，要视Q_NEWCOUNTER的值而定，因此这个变量还应再进行进一步的处理
-			Temp_NID_C_ItemCollector.pop_front();
-			BalisePackage NID_C_ItemCollector;//这是处理后的每一个新的应答器组的地区编号
-			NID_C_ItemCollector.push_back(m_baliseData_Package[0][8]);//第一项用于记录本项的值
-			BalisePackage NID_BG_ItemCollector = Analyze_BaliseMessage::FindItem("NID_BG", ETCS_5);//按顺序获取该信息包中所有包含“NID_BG”字符的项
-			BalisePackage Q_NEWCOUNTER_ItemCollector = Analyze_BaliseMessage::FindItem("Q_NEWCOUNTRY", ETCS_5);//按顺序获取该信息包中所有包含“Q_NEWCOUNTER”字符的项
-			BalisePackage Q_LOCACC_ItemCollector = Analyze_BaliseMessage::FindItem("Q_LOCACC", ETCS_5);//按顺序获取该信息包中所有包含“Q_LOCACC”字符的项
-			BalisePackage Q_LINKORIENTATION_ItemCollector = Analyze_BaliseMessage::FindItem("Q_LINKORIENTATION", ETCS_5);//按顺序获取该信息包中所有包含“NEW_COUNTER”字符的项
-			if (Q_NEWCOUNTER_ItemCollector.size() != NID_BG_ItemCollector.size() || NID_BG_ItemCollector.size() != Q_LINKORIENTATION_ItemCollector.size())
-			{
-				qDebug() << ("应答器E5包链接关系错误:NEW_COUNTER项的个数与NID_BG项的个数不匹配");
-				return queue;
-			}
-			for (int i = 1; i < Q_NEWCOUNTER_ItemCollector.size(); i++)
-			{
-				if (Q_NEWCOUNTER_ItemCollector[i].value == 0)//如果是0，表示这一组的应答器组的地区编号与上一组应答器组的地区编号相同
-				{
-					if (!NID_C_ItemCollector.size())//如果NID_C_ItemCollector是空的
-						NID_C_ItemCollector.push_back(m_baliseData_Package[0][8]);//把本次接收到的应答器的地区编号作为这一组应答器的地区编号
-					else//否则，这一组应答器组的地区编号与上一组是一样的，复制上一组的地区编号
-						NID_C_ItemCollector.push_back(NID_C_ItemCollector.back());
-				}
-				else//否则，表示这一组的应答器具有一个新的地区编号的值
-				{
-					NID_C_ItemCollector.push_back(Temp_NID_C_ItemCollector.front());
-					Temp_NID_C_ItemCollector.pop_front();
-				}
-			}
-			qint64 nid_c, nid_bg, d_link, allowerr;
-			Record_Baliseposition RB;
-			queue.clear();//即便旧的应答器位置比对列表还存在比对项也全部清空，以新的应答器中的ETCS5包为基准
-			for (int i = 1; i < D_LINK_ItemCollector.size(); i++)
-			{
-				nid_c = NID_C_ItemCollector[i].value;
-				nid_bg = NID_BG_ItemCollector[i].value;
-				d_link = D_LINK_ItemCollector[i].value * scale;
-				allowerr = Q_LOCACC_ItemCollector[i].value;
-				RB.ID = QString("%1").arg((nid_c >> 3) & 0x0000007F, 3, 10, QChar('0')); //大区编号
-				RB.ID += "-";
-				RB.ID += QString::number((nid_c) & 0x00000007);//分区编号
-				RB.ID += "-";
-				RB.ID += QString("%1").arg((nid_bg >> 8) & 0x0000003F, 2, 10, QChar('0')); //车站编号
-				RB.ID += "-";
-				RB.ID += QString("%1").arg((nid_bg) & 0x000000FF, 3, 10, QChar('0')); //车站编号
-				RB.D_LINK = d_link;
-				RB.AllowErr = allowerr;
-
-				if (!Q_LINKORIENTATION_ItemCollector.isEmpty())
-				{
-					RB.Dir = Train_Dir(Q_LINKORIENTATION_ItemCollector.front().value);
-					Q_LINKORIENTATION_ItemCollector.pop_front();
-				}
-				else
-					qDebug() << ("应答器E5包链接关系错误:Q_LINKORIENTATION项的个数少于预期");
-				queue.push_back(RB);
-			}//至此，更新了要比对的应答器列表
-		}
-	}
-	return queue;
-}
-
-
-
-QVector<QVector<QString> > CompareBaliseData_THREAD::Compare_BaliseLocation(int DataType)
-{
-	/**************************************************正线比对逻辑*******************************************************************/
-	QVector<QVector<QString> > resultVec;
-	int err = 0;//此项为长短链引入的误差
-    if ((DesignData::baliseLocationUpMap.empty() && g_LineDirection == UP) || (DesignData::baliseLocationDownMap.empty() && g_LineDirection == DOWN))//如果没有导入应答器位置表，那么就退出
-		return resultVec;
-	//有两种情况会调用这个函数：1，这个应答器报文信息中含有ETCS5包，那么它描述了以后几组应答器的位置。
-	//                  2，这个应答器报文是一个新的应答器组，虽然没有ETCS5包，但是它的位置由以前的应答器描述过
-	
-
-	//用于记录本应答器组编号的变量
-	QString BaliseGroupID = m_Balise_IDstr;
-	BaliseGroupID.resize(12);
-	//用于记录上一组应答器组编号的变量
-	static QString last_balish_group_ID;
-	//如果本次不是新的应答器组，那么本函数就没有执行下去的必要了，直接返回
-	if (last_balish_group_ID == BaliseGroupID)
-		return resultVec;
-	//用于记录公里标差值和ATP自行走距离差值的变量定义
-	static qint32 last_position_excel = -1;
-	qint32 now_position_excel = -1;
-	qint32 diff_excel_position = -1;
-	//进行比对
-	{
-		//应答器编号统一成应答器组中第一个应答器的编号
-		QString first_Balish_ID = m_Balise_IDstr;
-		if (first_Balish_ID.size() != 12)
-            first_Balish_ID[first_Balish_ID.size()-1]= '1';
-		QString Km;
-		//在应答器位置表中寻找应答器位置
-		if (DesignData::baliseLocationUpMap.find(first_Balish_ID) != DesignData::baliseLocationUpMap.end())
-			Km = DesignData::baliseLocationUpMap[first_Balish_ID].baliseKm;
-		else if (DesignData::baliseLocationDownMap.find(first_Balish_ID) != DesignData::baliseLocationDownMap.end())
-			Km = DesignData::baliseLocationDownMap[first_Balish_ID].baliseKm;
-		else
-			qDebug() << "Balish not find in sheet data:" << first_Balish_ID;
-		now_position_excel = DesignData::ConvertKmStr2Num(Km);
-		//如果这是第一个比对的应答器组，那么无须比对，记录编号和公里标直接退出就好
-		if (last_balish_group_ID.isEmpty())
-		{
-			last_position_excel = now_position_excel;
-			last_balish_group_ID = BaliseGroupID;
-			return resultVec;
-		}
-		//表位置作差，如果本应答器位置找不到，差值置为-2，如果本应答器或者上一组应答器的公里标是负数，那么差值置为-3
-		diff_excel_position = Km.isEmpty() ? -2 : \
-			(now_position_excel > 0 && last_position_excel > 0) ? abs(now_position_excel - last_position_excel) : -3;
-		//计算长短链
-		for (int i = 0; i < DesignData::brokenLinkVec.size(); i++)//考虑长短链
-		{
-			if ((DesignData::brokenLinkVec[i].lineType.contains("上") && g_LineDirection == UP) || (DesignData::brokenLinkVec[i].lineType.contains("下") && g_LineDirection == DOWN))
-			{
-				if (now_position_excel > last_position_excel)//公里标增大方向
-				{
-					if (DesignData::ConvertKmStr2Num(DesignData::brokenLinkVec[i].brokenLinkPosSta) > std::min(now_position_excel, last_position_excel) && DesignData::ConvertKmStr2Num(DesignData::brokenLinkVec[i].brokenLinkPosSta) < std::max(now_position_excel, last_position_excel))//如果断链起始点在两次应答器位置的中间
-					{
-						if (DesignData::brokenLinkVec[i].brokenLinkType.contains("短"))//短链加
-							err += DesignData::ConvertKmStr2Num(DesignData::brokenLinkVec[i].brokenLinkShortLen);
-						else if (DesignData::brokenLinkVec[i].brokenLinkType.contains("长"))//长链减
-							err -= DesignData::ConvertKmStr2Num(DesignData::brokenLinkVec[i].brokenLinkLongLen);
-					}
-				}
-				else
-				{
-					if (DesignData::ConvertKmStr2Num(DesignData::brokenLinkVec[i].brokenLinkPosEnd) > std::min(now_position_excel, last_position_excel) && DesignData::ConvertKmStr2Num(DesignData::brokenLinkVec[i].brokenLinkPosSta) < std::max(now_position_excel, last_position_excel))//如果断链终止点在两次应答器位置的中间
-					{
-						if (DesignData::brokenLinkVec[i].brokenLinkType.contains("短"))//短链-
-							err += DesignData::ConvertKmStr2Num(DesignData::brokenLinkVec[i].brokenLinkShortLen);
-						else if (DesignData::brokenLinkVec[i].brokenLinkType.contains("长"))//长链+
-							err -= DesignData::ConvertKmStr2Num(DesignData::brokenLinkVec[i].brokenLinkLongLen);
-					}
-				}
-			}
-		}
-
-		//生成比对结果
-		QVector<QString> tempstring_collector;
-		//第一行为结果总览，包括应答器编号、属性、比对结果是否有误
-		tempstring_collector.push_back(m_Balise_IDstr+"("+ Balish_Category2Str[SideLineIndex]+")");//resultVec[0][0]是应答器标识号+应答器的属性
-		tempstring_collector.push_back(QString::number(m_udpDataOrder));//resultVec[0][1]是原始数据序号，DMS数据项中此数据无效
-		tempstring_collector.push_back("Wrong");//resultVec[0][2]是比对是否有错误，默认错误
-		resultVec.push_back(tempstring_collector);
-		//第二行为比对的具体内容
-		tempstring_collector.clear();
-		tempstring_collector.resize(4);
-		tempstring_collector[0] = "无记录";//上一组应答器记录的链接应答器组的ID
-		tempstring_collector[1] = "无D_LINK值";//D_LINK值
-		tempstring_collector[2] = QString::number(diff_excel_position);//应答器位置的差值（在工程数据表中）
-		tempstring_collector[3] = "无记录";//D_LINK允许误差
-		//具体比对的前提是有记录的链接关系
-		if (!ALGI.isEmpty())
-		{
-			//先默认比对结果是正确的，有任何一项有错误就把该变量置为Wrong
-			resultVec[0][2] = "Right";
-			Record_Baliseposition temp_front;
-			//取比对队列的第一个
-			temp_front = ALGI.front();
-			ALGI.pop_front();
-			tempstring_collector[0] = temp_front.ID;//上一组应答器记录的链接应答器组的ID
-			tempstring_collector[1] = QString::number(temp_front.D_LINK);//上一组应答器记录的D_LINK值
-			tempstring_collector[2] = QString::number(diff_excel_position);//应答器位置的差值（在工程数据表中）
-			tempstring_collector[3] = QString::number(temp_front.AllowErr) + "m" + "R";
-			//当应答器为侧线应答器的时候，进行侧线的特殊比对
-			if (SideLineIndex >= 0 && SideLineIndex <= 3)
-			{
-				switch (SideLineIndex)
-				{
-				case Balish_Category::JZ://进站应答器组直接按照正线逻辑比较
-					break;
-				case Balish_Category::FCZ://反出站应答器组，按进站进路信息的第一个更新
-					diff_excel_position = SideLineInfoIn.balise_Diatance.isEmpty() ? -4 : SideLineInfoIn.balise_Diatance[0];
-					temp_front.ID = SideLineInfoIn.balise_ID.isEmpty() ? "无法提供" : SideLineInfoIn.balise_ID[0];
-					break;
-				case Balish_Category::CZ://反出站应答器组，按进站进路信息的最后一个更新
-					diff_excel_position = SideLineInfoIn.balise_Diatance.isEmpty() ? -5 : SideLineInfoIn.balise_Diatance.back();
-					temp_front.ID = SideLineInfoIn.balise_ID.isEmpty() ? "无法提供" : SideLineInfoIn.balise_ID.back();
-					break;
-				case Balish_Category::FJZ://出站应答器组，按出站进路信息更新
-					diff_excel_position = SideLineInfoOut.balise_Diatance.isEmpty() ? -6 : SideLineInfoOut.balise_Diatance[0];
-					temp_front.ID = SideLineInfoOut.balise_ID.isEmpty() ? "无法提供" : SideLineInfoOut.balise_ID[0];
-					break;
-				default:
-					diff_excel_position = -7;
-					temp_front.ID = "侧线判定冲突";
-					break;
-				}
-				if (diff_excel_position < 0)
-					qDebug() << "stop";
-				tempstring_collector[0] = temp_front.ID;//上一组应答器记录的链接应答器组的ID
-				tempstring_collector[2] = QString::number(diff_excel_position);//应答器位置的差值（在工程数据表中）
-			}
-			//判断应答器组编号是否能和记录对应上
-			tempstring_collector[0].push_back(temp_front.ID == BaliseGroupID ? "R" : "W");
-            if(tempstring_collector[0][tempstring_collector[0].size()-1]=='W')
-				resultVec[0][2] = "Wrong";
-			//如果存在断链，那么相应的D_LINK值显示要加减对应的长短链
-			if (err)
-				tempstring_collector[1].append(err > 0 ? ("+" + QString::number(err)) : ("-" + QString::number(abs(err))));
-			//判断应答器中的D_LINK值与excel表中的差值是否在允许的误差范围内
-			if (abs(temp_front.D_LINK + err - diff_excel_position) <= temp_front.AllowErr)
-			{
-				tempstring_collector[1].push_back("R");
-				tempstring_collector[2].push_back("R");
-			}
-			else
-			{
-				tempstring_collector[1].push_back("W");
-				tempstring_collector[2].push_back("W");
-				resultVec[0][2] = "Wrong";
-			}
-		}
-		last_position_excel = now_position_excel;
-		last_balish_group_ID = BaliseGroupID;//更新记录的上一次进来的应答器组号
-
-		//比对结果的格式化
-		{
-			QVector<QVector<QString>> vec_1_new;
-			vec_1_new.push_back(QVector<QString>{"", "应答器内容", "数据表", "比对结果"});
-			QVector<QString> V_QSTR;
-            QChar rw = tempstring_collector[0][tempstring_collector[0].size()-1];
-			V_QSTR << "应答器组编号" << BaliseGroupID << tempstring_collector[0].mid(0, tempstring_collector[0].size() - 1) << (rw == 'R' ? "一致" : "不一致");
-			vec_1_new.push_back(V_QSTR);
-			V_QSTR.clear();
-            rw = tempstring_collector[1][tempstring_collector[1].size()-1];
-			V_QSTR << "D_LINK值" << tempstring_collector[1].mid(0, tempstring_collector[1].size() - 1) + "(允许误差:" + tempstring_collector[3].mid(0, tempstring_collector[3].size() - 1) + ")" << tempstring_collector[2].mid(0, tempstring_collector[2].size() - 1) + "(允许误差:" + tempstring_collector[3].mid(0, tempstring_collector[3].size() - 1) + ")" << (rw == 'R' ? "一致" : "不一致");
-			vec_1_new.push_back(V_QSTR);
-			resultVec.append(vec_1_new);
-		}
-	}
-	return resultVec;
+    resultVec[7] = {{m_Balise_IDstr}};
 }
 
 int CompareBaliseData_THREAD::BinarySearchTrackCircuit(QVector<PathWayData>& pathWayData, int baliseLocation, int kmAddFlag)
@@ -1265,6 +984,7 @@ QVector<QVector<QString> > CompareBaliseData_THREAD::Compare_TrackCircuit(int po
 			//出站信号机中有轨道电路描述，则必为侧向通过或侧向发车。需填充出站应答器到反进站应答器及反进站应答器之后这两段轨道电路信息
 			int sectionStart = 0;
 			int baliseLen2Signal = -1;
+            //bug point
 			QString baliseRemark = DesignData::FindBaliseRemarkByID(m_Balise_IDstr);
 			if (baliseRemark != "")
 			{
@@ -1781,324 +1501,6 @@ int CompareBaliseData_THREAD::convert2Km(const QString& str)
 		}
 	}
 	return strTemp.toInt();
-}
-
-
-QVector<QVector<QString>> CompareBaliseData_THREAD::Compare_TrackStation(int position)//比对车站名，站台侧信息
-{
-	QVector<QVector<QString> > resultVec;
-	if (DesignData::stationVec.empty())//如果没有导入相应的列控数据，那么就退出
-		return resultVec;
-	BalisePackage ETCS_72 = m_baliseData_Package[position];//从解析结构中获取ETCS-72包
-	QVector<Item> Q_DIR_Vec = Analyze_BaliseMessage::FindItem("Q_DIR", ETCS_72);//从ETCS_72包中找到所有的表示验证方向的项，但在本包中，实际上只存在一个项
-	if ((Q_DIR_Vec[1].value == 0 && g_TrainDirection == FRONT) || (Q_DIR_Vec[1].value == 1 && g_TrainDirection == BACK))//ETCS-72包只有一个DIR项，作为整个包的运行验证方向，因此只需确定Q_DIR_Vec[0]
-		return resultVec;
-	/**********************执行到这里，说明符合本函数的执行条件，下面开始比对逻辑********************************/
-	QStack<char> temp_stack;
-	for (auto it = ETCS_72.rbegin(); it != ETCS_72.rend(); it++)//后向遍历ETCS_72包的内容，将所有描述字符入栈
-	{
-		if (it->name == "X_TEXT(L_TEXT)")//如果本项描述的是文本字节值，那么字符入栈
-		{
-			temp_stack.push(it->value);
-		}
-		else//如果已经将所有文本字节值提取出来了
-			break;
-	}
-
-	QByteArray encodedString;//应答器报文的字符编码为GBK18030字符集，这里需要转换为UNicode编码
-	QString Station_Side;
-	char first_char = temp_stack.pop();
-
-
-	if (first_char == '*')//表示文本信息时车站名
-	{
-		while (!temp_stack.empty())//为需要转换的字符数据赋值
-		{
-			encodedString.push_back(temp_stack.pop());
-		}
-		QTextCodec *codec = QTextCodec::codecForName("gb18030");
-		m_Station_Name = codec->toUnicode(encodedString);//转换为Unicode编码
-	}
-	else if (first_char == '#')//表示文本信息是站台侧
-	{
-		if (temp_stack.size() != 1)
-			qDebug() << "站台侧信息描述不符合规范";
-		else
-		{
-			if (temp_stack.top() == 'L' || temp_stack.top() == 'l')
-			{
-				Station_Side = "左";
-			}
-			else if (temp_stack.top() == 'R' || temp_stack.top() == 'r')
-			{
-				Station_Side = "右";
-			}
-			else
-			{
-				Station_Side = temp_stack.top();
-			}
-		}
-	}
-	else
-	{
-		qDebug() << "E72包首字符既非*也非#";
-	}
-
-	if (first_char == '*')
-	{
-		/*这里未对顺序进行判断*/
-		QVector<Station> &stationVec = DesignData::stationVec;//获取站台信息表中的数据
-		QStringList temp_split = m_Balise_IDstr.split("-");//将应答器标识号分解为大区编号小区编号等
-		QVector<QString> tempstring_collector;
-		tempstring_collector.push_back(m_Balise_IDstr + "(" + Balish_Category2Str[SideLineIndex] + ")");//resultVec[0][0]是应答器标识号
-		tempstring_collector.push_back(QString::number(m_udpDataOrder));//resultVec[0][1]是原始数据序号
-
-		tempstring_collector.push_back("Wrong");//resultVec[0][2]是比对是否有错误
-        //tempstring_collector.push_back(QString(first_char));//resultVec[0][2]存入文本的第一个字符，第一个字符用于指出返回的是车站名比对结果还是站台侧比对结果
-		if (m_originBaliseBitMessage.type & BaliseType::SideLine)
-		{
-			tempstring_collector.push_back("(侧线)");
-		}
-		else
-		{
-			tempstring_collector.push_back("");
-		}
-		resultVec.push_back(tempstring_collector);
-
-		tempstring_collector.clear();
-		tempstring_collector.resize(12);//一行比对结果一共12个格
-
-		tempstring_collector[0] = m_Station_Name;//resultVec[1][0]是车站名（应答器）
-		tempstring_collector[1] = "";//resultVec[1][1]是车站名（表）
-		tempstring_collector[2] = "无匹配";//resultVec[1][2]是车站名比对结果
-
-		tempstring_collector[3] = temp_split.at(0);//resultVec[1][3]是大区编号（应答器）
-		tempstring_collector[4] = "";//resultVec[1][4]是大区编号（表）
-		tempstring_collector[5] = "无匹配";//resultVec[1][5]是大区编号比对结果
-
-		tempstring_collector[6] = temp_split.at(1);//resultVec[1][6]是分区编号（应答器）
-		tempstring_collector[7] = "";//resultVec[1][7]是分区编号（表）
-		tempstring_collector[8] = "无匹配";//resultVec[1][8]是大区编号比对结果
-
-		tempstring_collector[9] = temp_split.at(2);//resultVec[1][9]是车站编号（应答器）
-		tempstring_collector[10] = "";//resultVec[1][10]是车站编号（表）
-		tempstring_collector[11] = "无匹配";//resultVec[1][11]是车站编号比对结果
-
-		for (int i = 0; i < stationVec.size(); i++)
-		{
-			if (stationVec[i].stationName == m_Station_Name)
-			{
-				resultVec[0][2] = "Right";
-				tempstring_collector[1] = stationVec[i].stationName;//车站名（表）
-				if (m_Station_Name == stationVec[i].stationName)
-					tempstring_collector[2] = "一致";
-				else
-				{
-					tempstring_collector[2] = "不一致";
-					resultVec[0][2] = "Wrong";
-				}
-
-				tempstring_collector[4] = QString("%1").arg(stationVec[i].regionID, 3, '0');//大区编号（表）
-				if (temp_split.at(0) == tempstring_collector[4])
-					tempstring_collector[5] = "一致";
-				else
-				{
-					tempstring_collector[5] = "不一致";
-					resultVec[0][2] = "Wrong";
-				}
-
-				tempstring_collector[7] = stationVec[i].subareaID;//分区编号（表）
-				if (temp_split.at(1) == stationVec[i].subareaID)
-					tempstring_collector[8] = "一致";
-				else
-				{
-					tempstring_collector[8] = "不一致";
-					resultVec[0][2] = "Wrong";
-				}
-
-				tempstring_collector[10] = QString("%1").arg(stationVec[i].stationID, 2, '0');//车站编号（表）
-				if (temp_split.at(2) == tempstring_collector[10])
-					tempstring_collector[11] = "一致";
-				else
-				{
-					tempstring_collector[11] = "不一致";
-					resultVec[0][2] = "Wrong";
-				}
-				break;
-			}
-		}
-        QVector<QVector<QString>> tempstring_collector_new;
-        QVector<QString> tempstring_collector_item;
-
-        tempstring_collector_item<<""<<"应答器"<<"数据表"<<"比对结果";
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        tempstring_collector_item<<"车站名"<<tempstring_collector[0]<<tempstring_collector[1]<<tempstring_collector[2];
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        tempstring_collector_item<<"大区编号"<<tempstring_collector[3]<<tempstring_collector[4]<<tempstring_collector[5];
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        tempstring_collector_item<<"分区编号"<<tempstring_collector[6]<<tempstring_collector[7]<<tempstring_collector[8];
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        tempstring_collector_item<<"车站编号"<<tempstring_collector[9]<<tempstring_collector[10]<<tempstring_collector[11];
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        resultVec.append(tempstring_collector_new);
-		return resultVec;
-	}
-	else if (first_char == '#')
-	{
-		QVector<StationSide> &stationSideVec = DesignData::stationSideVec;//获取站台信息表中的数据
-
-		QVector<QString> tempstring_collector;
-		tempstring_collector.push_back(m_Balise_IDstr + "(" + Balish_Category2Str[SideLineIndex] + ")");//resultVec[0][0]是应答器标识号
-		tempstring_collector.push_back(QString::number(m_udpDataOrder));//resultVec[0][1]是原始数据序号
-
-		tempstring_collector.push_back("Wrong");//resultVec[0][2]是比对是否有错误
-        //tempstring_collector.push_back(QString(first_char));//resultVec[0][3]存入文本的第一个字符，第一个字符用于指出返回的是车站名比对结果还是站台侧比对结果
-		if (m_originBaliseBitMessage.type & BaliseType::SideLine)
-		{
-			tempstring_collector.push_back("(侧线)");
-		}
-		else
-		{
-			tempstring_collector.push_back("");
-		}
-		resultVec.push_back(tempstring_collector);
-
-		tempstring_collector.clear();
-		tempstring_collector.resize(9);//一行比对结果一共6个格
-
-		BaliseLocation BL;
-		if (g_LineDirection == UP)
-			BL = DesignData::baliseLocationUpMap[m_Balise_IDstr];
-		else if (g_LineDirection == DOWN)
-			BL = DesignData::baliseLocationDownMap[m_Balise_IDstr];
-		QString current_balise_name = BL.baliseName.split("-")[0];// ReadFileThread::strFilter(BL.baliseName, QString("-"), None, true);
-
-
-		if (m_Station_Name.isEmpty())
-		{
-			if (g_LineDirection == DOWN)
-				m_Station_Name = DesignData::baliseLocationDownMap[m_Balise_IDstr].remark_1;
-			else if (g_LineDirection == UP)
-				m_Station_Name = DesignData::baliseLocationUpMap[m_Balise_IDstr].remark_1;
-		}
-		tempstring_collector[0] = m_Station_Name;//第一个是当前车站名
-		tempstring_collector[1] = "无匹配";//resultVec[1][1]是车站名（表）
-		tempstring_collector[2] = "不一致";
-		tempstring_collector[3] = current_balise_name;//第二个是当前应答器名称
-		tempstring_collector[4] = "无匹配";//resultVec[1][3]是应答器编号（表）
-		tempstring_collector[5] = "不一致";
-		tempstring_collector[6] = Station_Side;//第三个是当前应答器描述的站台侧
-		tempstring_collector[7] = "无匹配";//resultVec[1][5]是站台侧（表）
-		tempstring_collector[8] = "不一致";
-
-		bool flag_stationname = false, flage_balisename = false, flag_side = false;
-		for (auto iter = stationSideVec.begin(); iter != stationSideVec.end(); iter++)
-		{
-			if (iter->stationName == tempstring_collector[0])//在表中有相应的车站名
-			{
-				flag_stationname = true;
-                QString sss = strFilter(iter->baliseName, QString("-"), None, true);
-				if (sss == current_balise_name)//测试是否应答器名称是相符的
-				{
-					flage_balisename = true;
-					if (iter->stationSide == Station_Side)
-					{
-						flag_side = true;
-					}
-					else
-					{
-						tempstring_collector[7] = iter->stationSide;
-					}
-				}
-			}
-		}
-		int countRight = 0;
-		if (flag_stationname)
-		{
-			tempstring_collector[1] = tempstring_collector[0];
-			tempstring_collector[2] = "一致";
-			countRight++;
-		}
-		if (flage_balisename)
-		{
-			tempstring_collector[4] = tempstring_collector[3];
-			tempstring_collector[5] = "一致";
-			countRight++;
-		}
-		if (flag_side)
-		{
-			tempstring_collector[7] = tempstring_collector[6];
-			tempstring_collector[8] = "一致";
-			countRight++;
-		}
-		resultVec[0][2] = countRight == 3 ? "Right" : "Wrong";
-
-        QVector<QVector<QString>> tempstring_collector_new;
-        QVector<QString> tempstring_collector_item;
-
-        tempstring_collector_item<<""<<"应答器"<<"数据表"<<"比对结果";
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        tempstring_collector_item<<"车站名"<<tempstring_collector[0]<<tempstring_collector[1]<<tempstring_collector[2];
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        tempstring_collector_item<<"应答器名称"<<tempstring_collector[3]<<tempstring_collector[4]<<tempstring_collector[5];
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        tempstring_collector_item<<"站台侧"<<tempstring_collector[6]<<tempstring_collector[7]<<tempstring_collector[8];
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        resultVec.append(tempstring_collector_new);
-
-		return resultVec;
-	}
-	else
-	{
-		QVector<StationSide> &stationSideVec = DesignData::stationSideVec;//获取站台信息表中的数据
-
-		QVector<QString> tempstring_collector;
-		tempstring_collector.push_back(m_Balise_IDstr);//resultVec[0][0]是应答器标识号
-		tempstring_collector.push_back(QString::number(m_udpDataOrder));//resultVec[0][1]是原始数据序号
-
-		tempstring_collector.push_back("Wrong");//resultVec[0][2]是比对是否有错误
-		tempstring_collector.push_back(QString(first_char));//resultVec[0][2]存入文本的第一个字符，第一个字符用于指出返回的是车站名比对结果还是站台侧比对结果
-		resultVec.push_back(tempstring_collector);
-
-		tempstring_collector.clear();
-		tempstring_collector.resize(8);//一行比对结果一共6个格
-
-
-		tempstring_collector[0] = "E72包首字符既非*也非#";
-		tempstring_collector[1] = "E72包首字符既非*也非#";
-		tempstring_collector[2] = "E72包首字符既非*也非#";
-		tempstring_collector[3] = "E72包首字符既非*也非#";
-		tempstring_collector[4] = "E72包首字符既非*也非#";
-		tempstring_collector[5] = "E72包首字符既非*也非#";
-		tempstring_collector[6] = "E72包首字符既非*也非#";
-		tempstring_collector[7] = "E72包首字符既非*也非#";
-		tempstring_collector[8] = "E72包首字符既非*也非#";
-
-        QVector<QVector<QString>> tempstring_collector_new;
-        QVector<QString> tempstring_collector_item;
-
-        tempstring_collector_item<<"车站名"<<tempstring_collector[0]<<tempstring_collector[1]<<tempstring_collector[2];
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        tempstring_collector_item<<"前应答器名称"<<tempstring_collector[3]<<tempstring_collector[4]<<tempstring_collector[5];
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        tempstring_collector_item<<"站台侧"<<tempstring_collector[6]<<tempstring_collector[7]<<tempstring_collector[8];
-        tempstring_collector_new.push_back(tempstring_collector_item);
-        tempstring_collector_item.clear();
-        resultVec.append(tempstring_collector_new);
-
-		return resultVec;
-	}
 }
 
 /*流程图

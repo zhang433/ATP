@@ -32,7 +32,7 @@ public:
 
     static BalisePackCollector& Resolve(const BaliseBitMessage &input_data);//传入一个应答器报文，进行解析，同时提取应答器标识号
     static QString GetBaliseID(const BaliseBitMessage &input_data);//从一个应答器原始报文中提取应答器标识号
-    static QVector<int> GetPackagePosition(QString input,BalisePackCollector& data_collector=Analyze_BaliseMessage::Analyze_Result);//查找给定的信息包的位置
+    static QVector<int> GetPackagePosition(const QString input,const BalisePackCollector& data_collector=Analyze_BaliseMessage::Analyze_Result);//查找给定的信息包的位置
     static BalisePackage FindItem(QString name,BalisePackage package);//在指定的信息包package中找到指定name的项，考虑到会有多项存在的情况，以QVector的形式返回
 private:
     static int AnalyzeBaliseMsg();

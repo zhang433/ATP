@@ -1,7 +1,4 @@
-﻿#ifdef _MSC_VER
-#pragma execution_character_set("utf-8")
-#endif
-#pragma once
+﻿#pragma once
 /*************************************************************
  * @功能：此头文件中定义了一些基础数据结构体，用在导入列控数据
  * @作者：hb
@@ -267,7 +264,7 @@ typedef struct
     QString baliseUse;           //用途
     QString remark_1;            //备注1
     QString remark_2;            //备注2
-}BaliseLocation;
+}BalisePosition;
 
 //*****断链明细*********************************
 typedef struct
@@ -350,8 +347,8 @@ QDataStream& operator<<(QDataStream& QDS, const PathWayData_Less& C);
 QDataStream& operator>>(QDataStream& QDS, PathWayData_Less& C);
 QDataStream& operator<<(QDataStream& QDS, const PathWaySpeed& C);
 QDataStream& operator>>(QDataStream& QDS, PathWaySpeed& C);
-QDataStream& operator<<(QDataStream& QDS, const BaliseLocation& C);
-QDataStream& operator>>(QDataStream& QDS, BaliseLocation& C);
+QDataStream& operator<<(QDataStream& QDS, const BalisePosition& C);
+QDataStream& operator>>(QDataStream& QDS, BalisePosition& C);
 QDataStream& operator<<(QDataStream& QDS, const BrokenLink& C);
 QDataStream& operator>>(QDataStream& QDS, BrokenLink& C);
 QDataStream& operator<<(QDataStream& QDS, const KmInfo& C);

@@ -409,7 +409,7 @@ BalisePackage Analyze_BaliseMessage::FindItem(QString name, BalisePackage packag
 *  修改时间：2017-6-21 已测试通过
 *  备   注：
 *************************************************************************/
-QVector<int> Analyze_BaliseMessage::GetPackagePosition(QString input, BalisePackCollector& data_collector)
+QVector<int> Analyze_BaliseMessage::GetPackagePosition(const QString input, const BalisePackCollector& data_collector)
 {
 	QVector<int> ret;
 	for (int i = 0; i < data_collector.size(); i++)

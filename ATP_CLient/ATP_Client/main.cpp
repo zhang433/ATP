@@ -26,61 +26,61 @@ TcpDataSocket->SendData_SIGNAL(const char*ptr,qint64 len);
 int main(int argc, char *argv[])
 {
     QApplication a(argc,argv);
-    //¿ªÆôÊ±µÄÉè±¸×¢²áÈÏÖ¤¼ì²â¹¤×÷
+    //å¼€å¯æ—¶çš„è®¾å¤‡æ³¨å†Œè®¤è¯æ£€æµ‹å·¥ä½œ
     if(!UserManagementUI::isRegstered())
     {
         bool ok;
-        QInputDialog::getText(nullptr,"Éè±¸Î´×¢²á","±¾Éè±¸Î´×¢²á£¬Çë½«ÒÔÏÂÌØÕ÷ÐòÁÐÂë·¢ËÍ¸øÏîÄ¿×é¹ÜÀíÔ±ÒÔ»ñÈ¡ÊÚÈ¨Âë",QLineEdit::Normal,UserManagementUI::getEncodeSequence(),&ok);
+        QInputDialog::getText(nullptr,"è®¾å¤‡æœªæ³¨å†Œ","æœ¬è®¾å¤‡æœªæ³¨å†Œï¼Œè¯·å°†ä»¥ä¸‹ç‰¹å¾åºåˆ—ç å‘é€ç»™é¡¹ç›®ç»„ç®¡ç†å‘˜ä»¥èŽ·å–æŽˆæƒç ",QLineEdit::Normal,UserManagementUI::getEncodeSequence(),&ok);
         if(!ok)
             exit(0);
         QString sequence;
         while(1){
-            sequence = QInputDialog::getText(nullptr,"Éè±¸Î´×¢²á","ÇëÊäÈë±¾Éè±¸µÄÊÚÈ¨ÐòÁÐÂë:",QLineEdit::Normal,"",&ok);
+            sequence = QInputDialog::getText(nullptr,"è®¾å¤‡æœªæ³¨å†Œ","è¯·è¾“å…¥æœ¬è®¾å¤‡çš„æŽˆæƒåºåˆ—ç :",QLineEdit::Normal,"",&ok);
             if(!ok)
                 exit(0);
             if(UserManagementUI::regsterThisMachine(sequence))
                 break;
-            QMessageBox::information(nullptr,"Éè±¸Î´×¢²á","ÊÚÈ¨ÐòÁÐÎÞÐ§£¡ÇëÖØÐÂÊäÈë");
+            QMessageBox::information(nullptr,"è®¾å¤‡æœªæ³¨å†Œ","æŽˆæƒåºåˆ—æ— æ•ˆï¼è¯·é‡æ–°è¾“å…¥");
         }
     }
 
-    //Èç¹ûÃ»ÓÐÉèÖÃÄ¬ÈÏµÄ³¬¼¶¹ÜÀíÔ±È¨ÏÞÃÜÂë£¬ÄÇÃ´¾ÍÉèÖÃÒ»¸öÄ¬ÈÏµÄ
+    //å¦‚æžœæ²¡æœ‰è®¾ç½®é»˜è®¤çš„è¶…çº§ç®¡ç†å‘˜æƒé™å¯†ç ï¼Œé‚£ä¹ˆå°±è®¾ç½®ä¸€ä¸ªé»˜è®¤çš„
     if(!UserManagementUI::isUserExist("Administrator"))
         UserManagementUI::setUser("Administrator","123456789");
 
     QString user;
-    //ÓÃ»§µÇÂ¼²Ù×÷
+    //ç”¨æˆ·ç™»å½•æ“ä½œ
     while(1)
     {
         bool ok;
-        user = QInputDialog::getText(nullptr,QString("ÓÃ»§µÇÂ¼"),"ÇëÊäÈëÓÃ»§Ãû",QLineEdit::Normal,"Administrator",&ok);
+        user = QInputDialog::getText(nullptr,QString("ç”¨æˆ·ç™»å½•"),"è¯·è¾“å…¥ç”¨æˆ·å",QLineEdit::Normal,"Administrator",&ok);
         if(!ok)
             exit(0);
-        //ÊÚÈ¨ÓÃ»§£¬²éÑ¯×¢²á±íÖÐ¼ÇÂ¼µÄÃÜÂë
+        //æŽˆæƒç”¨æˆ·ï¼ŒæŸ¥è¯¢æ³¨å†Œè¡¨ä¸­è®°å½•çš„å¯†ç 
         if(user.isEmpty()||!UserManagementUI::isUserExist(user)) {
-            QMessageBox::information(nullptr,"µÇÂ¼´íÎó","ÓÃ»§Ãû²»´æÔÚ£¡");
+            QMessageBox::information(nullptr,"ç™»å½•é”™è¯¯","ç”¨æˆ·åä¸å­˜åœ¨ï¼");
             continue;
         }
         else {
-            QString key = QInputDialog::getText(nullptr,QString("ÓÃ»§µÇÂ¼"),"ÇëÊäÈëÃÜÂë",QLineEdit::Normal,"",&ok);
+            QString key = QInputDialog::getText(nullptr,QString("ç”¨æˆ·ç™»å½•"),"è¯·è¾“å…¥å¯†ç ",QLineEdit::Normal,"",&ok);
             if(UserManagementUI::isUserValid(user,key))
             {
                 if(user=="Administrator" && key=="123456789")
                 {
                     while(1)
                     {
-                        QString key1 = QInputDialog::getText(nullptr,QString("ÃÜÂë¸ü¸Ä"),"µ±Ç°¹ÜÀíÔ±ÃÜÂëÎªÄ¬ÈÏÃÜÂë£¬ÇëÉèÖÃÐÂµÄ¹ÜÀíÔ±ÃÜÂë£º",QLineEdit::Normal,"",&ok);
+                        QString key1 = QInputDialog::getText(nullptr,QString("å¯†ç æ›´æ”¹"),"å½“å‰ç®¡ç†å‘˜å¯†ç ä¸ºé»˜è®¤å¯†ç ï¼Œè¯·è®¾ç½®æ–°çš„ç®¡ç†å‘˜å¯†ç ï¼š",QLineEdit::Normal,"",&ok);
                         if(!ok)exit(0);
-                        QString key2 = QInputDialog::getText(nullptr,QString("ÃÜÂë¸ü¸Ä"),"ÇëÔÙÊäÈëÒ»±é£º",QLineEdit::Normal,"",&ok);
+                        QString key2 = QInputDialog::getText(nullptr,QString("å¯†ç æ›´æ”¹"),"è¯·å†è¾“å…¥ä¸€éï¼š",QLineEdit::Normal,"",&ok);
                         if(!ok)exit(0);
                         if(key1!=key2)
                         {
-                            QMessageBox::information(nullptr,"´íÎó","Á½´ÎÊäÈëµÄÃÜÂë²»Ò»ÖÂ£¬ÇëÖØÐÂÊäÈë£¡");
+                            QMessageBox::information(nullptr,"é”™è¯¯","ä¸¤æ¬¡è¾“å…¥çš„å¯†ç ä¸ä¸€è‡´ï¼Œè¯·é‡æ–°è¾“å…¥ï¼");
                             continue;
                         }
                         if(key1=="123456789")
                         {
-                            QMessageBox::information(nullptr,"´íÎó","ÖØÖÃÃÜÂë²»¿ÉÓëÄ¬ÈÏÃÜÂëÏàÍ¬£¬ÇëÖØÐÂÊäÈë");
+                            QMessageBox::information(nullptr,"é”™è¯¯","é‡ç½®å¯†ç ä¸å¯ä¸Žé»˜è®¤å¯†ç ç›¸åŒï¼Œè¯·é‡æ–°è¾“å…¥");
                             continue;
                         }
                         UserManagementUI::setUser(user,key1);
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
                 break;
             }
             else
-                QMessageBox::information(nullptr,"µÇÂ¼´íÎó","ÃÜÂë´íÎó£¡");
+                QMessageBox::information(nullptr,"ç™»å½•é”™è¯¯","å¯†ç é”™è¯¯ï¼");
         }
     }
 
@@ -109,18 +109,18 @@ int main(int argc, char *argv[])
 
     MainWindow w(user);
 
-    //Ö÷½çÃæµÄµØ²½×´Ì¬À¸µÄ¸üÐÂ
+    //ä¸»ç•Œé¢çš„åœ°æ­¥çŠ¶æ€æ çš„æ›´æ–°
     QObject::connect(tcpCommandClient, &TcpCommandClient::UpdateMainWondowStatue_SIGNAL, &w, &MainWindow::UpdateStatusState_SLOT);
 	QObject::connect(tcpDataClient, &TcpDataClient::UpdateMainWondowStatue_SIGNAL, &w, &MainWindow::UpdateStatusState_SLOT);
-    //¸üÐÂÖ÷½çÃæÊÓÍ¼´°¿ÚµÄÐÅºÅ
+    //æ›´æ–°ä¸»ç•Œé¢è§†å›¾çª—å£çš„ä¿¡å·
     QObject::connect(tcpCommandClient,&TcpCommandClient::ReDraw_MainWindow_SIGNAL,&w,&MainWindow::ReDraw_MainWindow);
     QObject::connect(tcpDataClient,&TcpDataClient::ReDraw_MainWindow_SIGNAL,&w,&MainWindow::ReDraw_MainWindow);
 
-    //¿ªÊ¼Á¬½Ó
+    //å¼€å§‹è¿žæŽ¥
     emit tcpDataClient->init();
     emit tcpCommandClient->init();
 
-    //ÉèÖÃ³ÌÐòÏÔÊ¾½ØÃæ´óÐ¡ºÍ³õÊ¼Î»ÖÃ
+    //è®¾ç½®ç¨‹åºæ˜¾ç¤ºæˆªé¢å¤§å°å’Œåˆå§‹ä½ç½®
     QDesktopWidget* desktopWidget = QApplication::desktop();
     int curMonitor = desktopWidget->screenNumber();
     QRect rect = desktopWidget->screenGeometry(curMonitor);
