@@ -8,4 +8,8 @@ ui_*.h
 moc_*.h
 !*.pro
 !*.ui
-!others/*.*
+!*.data
+!*.Data
+!*.xls
+!*.xlsx
+!README
