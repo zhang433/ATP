@@ -12,7 +12,7 @@ struct
 	unsigned char length;//该项的存储数据的位长
 	QString name;//该项的名称
 	unsigned char mark;//表记值，用于区分对于不同项的操作
-}_ItemMask[253] =
+}_ItemMask[273] =
 /************************************************************************************
 *关于mark的定义：从左至右：
 *                前四位：0：表示该项与其他项无关
@@ -277,6 +277,26 @@ struct
 {"信息包位数：",  13, "L_PACKET",  0},
 {"立即停车:",  1, "Q_STOP",  0},
 {"",0,"EOP",0},
+{"",0,"CTCS-12",0},
+{"信息包识别码：",  9, "NID_XUSER",  0},
+{"验证方向：",2,"Q_DIR",0},
+{"信息包位数：",13,"L_PACKET",0},
+{"通信命令：",1,"Q_TSRS",0},
+{"地区编号：",10,"NID_C",0},
+{"TSRS编号：",14,"NID_TSRS",0},
+{"无线用户IP地址：",64,"NID_RADIO",0},
+{"休眠设备的通信管理：",1,"Q_SLEEPSESSION",0},
+{"",0,"EOP",0},
+{"",0,"CTCS-13",0},
+{"信息包识别码：",  9, "NID_XUSER",  0},
+{"验证方向：",2,"Q_DIR",0},
+{"信息包位数：",13,"L_PACKET",0},
+{"距离/长度的分辨率：",2,"Q_SCALE",0},
+{"站台位置：",2,"Q_PLATFORM",0},
+{"站台是否设置站台门：",2,"Q_DOOR",0},
+{"列车停靠的股道编号：",24,"N_G",0},
+{"本应答器至停车定位基准点间的距离：",15,"D_STOP",0},
+{"",0,"EOP",0},
 };//包括信息包项199个，帧标志项10个，每个信息包的开始标志23个(17个ETCS包 + 5个CTCS包 + 一个结尾标志“*”)
 struct
 {
@@ -302,11 +322,7 @@ struct
 {137,190},
 {254,196},
 };//信息包对应存储结构体的映射关系
-struct
-{
-	unsigned char Package_Number;
-	unsigned char Table_Numer;
-}CTCS_map[6] =
+const QMap<quint16,quint16> CTCS_map =
 {
 {0,0},
 {1,202},
@@ -314,6 +330,8 @@ struct
 {3,232},
 {4,240},
 {5,248},
+{12,254},
+{13,264},
 };//CTCS信息包对应于信息包项的映射
 
 Analyze_BaliseMessage::Analyze_BaliseMessage()
@@ -323,9 +341,9 @@ Analyze_BaliseMessage::Analyze_BaliseMessage()
 
 BalisePackCollector& Analyze_BaliseMessage::Resolve(const BaliseBitMessage &input_data)
 {
-	Analyze_BaliseMessage::msgptr = &input_data;
+    Analyze_BaliseMessage::msgptr = &input_data;
+    GetBaliseID(input_data);
 	AnalyzeBaliseMsg();
-	GetBaliseID(input_data);
 	return Analyze_Result;
 }
 
@@ -340,7 +358,7 @@ BalisePackCollector& Analyze_BaliseMessage::Resolve(const BaliseBitMessage &inpu
 *************************************************************************/
 QString Analyze_BaliseMessage::GetBaliseID(const BaliseBitMessage &input_data)
 {
-	QString msg_identifier;
+    //QString msg_identifier;
 	offset_now = 25;//设置要提取信息的起始位置
 	Analyze_BaliseMessage::msgptr = &input_data;
 	msg_identifier.clear();
@@ -396,7 +414,13 @@ BalisePackage Analyze_BaliseMessage::FindItem(QString name, BalisePackage packag
 			RP.push_back(package[i]);
 		}
 	}
-	return RP;
+    return RP;
+}
+
+bool Analyze_BaliseMessage::CheckBaliseInfoIllegal(const BaliseBitMessage &input_data)
+{
+    Analyze_BaliseMessage::msgptr = &input_data;
+    return AnalyzeBaliseMsg()==0?false:true;
 }
 
 /*************************************************************************
@@ -494,8 +518,11 @@ int Analyze_BaliseMessage::AnalyzeBaliseMsg()
 	}
 	Analyze_Result.push_back(templete_package);
 	templete_package.clear();
-	while ((Package_Number = FetchValue(8)) != 0xff)
+    Package_Number = FetchValue(8);
+    while (Package_Number != 0xff)
 	{
+        if(msg_identifier=="117-1-02-107")
+            qDebug()<<"package Number"<<qint32(Package_Number);
 		templete_package.clear();
 		i = -1;
 		offset_now -= 8;
@@ -513,11 +540,13 @@ int Analyze_BaliseMessage::AnalyzeBaliseMsg()
 		if (templete_item.name == "ETCS-27")//分析ETCS-27数据包
 		{
 			Analyze_ETCS_27();
+            Package_Number = FetchValue(8);
 			continue;
 		}
 		if (templete_item.name == "ETCS-44")//分析ETCS-44数据包
 		{
 			Analyze_ETCS_44();
+            Package_Number = FetchValue(8);
 			continue;
 		}
 		//从映射表找到项的起始地址
@@ -637,6 +666,7 @@ int Analyze_BaliseMessage::AnalyzeBaliseMsg()
 			++k;
 		}
 		Analyze_Result.push_back(templete_package);
+        Package_Number = FetchValue(8);
 	}
 	return 0;
 }
@@ -736,7 +766,7 @@ int Analyze_BaliseMessage::Analyze_ETCS_44()
 {
 	int k = 95;
 
-	unsigned char CTCS_NUM;
+    quint16 CTCS_NUM;
 	unsigned char circle_time;
 	Item templete_item;
 	QVector<Item> templete_package;
@@ -750,8 +780,9 @@ int Analyze_BaliseMessage::Analyze_ETCS_44()
 			templete_item.value = CTCS_NUM;
 			templete_item.remark = Expend(k, templete_item.value);
 			templete_package.push_back(templete_item);
-
-			k = CTCS_map[CTCS_NUM].Table_Numer + 1;
+            if(CTCS_map.find(CTCS_NUM)==CTCS_map.end())
+                qDebug()<<"CTCS Package Number ERROR, Package Number is "+QString::number(CTCS_NUM);
+            k = CTCS_map[CTCS_NUM] + 1;
             while (_ItemMask[k].name != "EOP")
 			{
                 if (_ItemMask[k].mark == 0)
@@ -880,7 +911,7 @@ QString Analyze_BaliseMessage::Expend(int k, qint64 value)
 			return "error";
 		}
 	}
-	case 8:case 19:case 27:case 91:case 160:case 167:case 179:
+    case 8:case 19:case 27:case 91:case 160:case 167:case 179:case 258:
 	{//NID_C，地区编号
 		int temp1 = (int)(value >> 3);
 		int temp2 = (int)(value & 7);
@@ -949,7 +980,9 @@ QString Analyze_BaliseMessage::Expend(int k, qint64 value)
 	case 217:
 	case 233:
 	case 241:
-	case 249: {//Q_DIR，验证方向
+    case 249:
+    case 255:
+    case 265:{//Q_DIR，验证方向
 		if (value == 0)
             return _ItemMask[k].remark + "反向有效";
 		else if (value == 1)
@@ -983,7 +1016,9 @@ QString Analyze_BaliseMessage::Expend(int k, qint64 value)
 	case 218:
 	case 234:
 	case 242:
-	case 250: {//L_PACKET，信息包位数
+    case 250:
+    case 256:
+    case 266:{//L_PACKET，信息包位数
         return _ItemMask[k].remark + QString::number(value, 10);
 	}
 	case 16:
@@ -998,7 +1033,8 @@ QString Analyze_BaliseMessage::Expend(int k, qint64 value)
 	case 205:
 	case 219:
 	case 235:
-	case 243: {//Q_SCALE，距离/长度分辨率
+    case 243:
+    case 267:{//Q_SCALE，距离/长度分辨率
 		if (value == 0)
             return _ItemMask[k].remark + "10cm";
 		else if (value == 1)
@@ -1530,7 +1566,8 @@ QString Analyze_BaliseMessage::Expend(int k, qint64 value)
 			return "error";
 		}
 	}
-	case 207:case 211:
+    case 207:
+    case 211:
 	{//NID_SIGNAL，信号机或信号点类型
 		if (value == 0)
             return _ItemMask[k].remark + "没有信号机";
@@ -1597,6 +1634,82 @@ QString Analyze_BaliseMessage::Expend(int k, qint64 value)
 			return "error";
 		}
 	}
+    case 257:
+    {
+        if(value!=0&&value!=1)
+        {
+            qDebug()<<"Expend函数中case268出错";
+            return "error";
+        }
+        return _ItemMask[k].remark+(value==0?"终止通信":"建立通信");
+    }
+    case 259:
+    {//NID_TSRS,TSRS编号
+        return _ItemMask[k].remark+QString::number(value);
+    }
+    case 260:
+    {//NID_RADIO，无线用户地址
+        quint8 temp;
+        QString IP;
+        for(int i=0;i<32;i+=8)
+        {
+            temp = static_cast<quint8>(value>>i);
+            IP.append(QString::number(temp));
+            IP.append(".");
+        }
+        IP.resize(IP.size()-1);
+        return _ItemMask[k].remark+IP;
+    }
+    case 261:
+    {//Q_SLEEPSESSION,休眠设备的通信管理
+        if(value!=0&&value!=1)
+        {
+            qDebug()<<"Expend函数中case268出错";
+            return "error";
+        }
+        return _ItemMask[k].remark+(value==0?"忽略通信管理信息":"考虑通信管理信息");
+    }
+    case 268:
+    {//Q_PLATFORM,站台位置
+        switch(value)
+        {
+        case 0:
+            return _ItemMask[k].remark+"左侧";
+        case 1:
+            return _ItemMask[k].remark+"右侧";
+        case 2:
+            return _ItemMask[k].remark+"双侧";
+        case 3:
+            return _ItemMask[k].remark+"无站台";
+        default:
+            qDebug()<<"Expend函数中case268出错";
+            return "error";
+        }
+    }
+    case 269:
+    {//Q_DOOR,站台是否设置站台门
+        switch(value)
+        {
+        case 0:
+        case 3:
+            return _ItemMask[k].remark+"备用";
+        case 1:
+            return _ItemMask[k].remark+"有站台门";
+        case 2:
+            return _ItemMask[k].remark+"无站台门";
+        default:
+            qDebug()<<"Expend函数中case269出错";
+            return "error";
+        }
+    }
+    case 270:
+    {//N_G,列车停靠的股道编号
+        return _ItemMask[k].remark+QString::number(value);
+    }
+    case 271:
+    {//D_STOP,本应答器至停车定位基准点间的距离
+        return _ItemMask[k].remark+QString::number(value);
+    }
 	default:
 		return "error";
 	}

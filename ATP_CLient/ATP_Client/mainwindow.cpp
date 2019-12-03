@@ -23,13 +23,14 @@
 #include <QResource>
 #include <analyze_rbcmessage.h>
 #include <QDir>
+#include <QStringList>
 #include "getreport_dialog.h"
 #include "tcpcommandclient.h"
 #include "choosedesignfiles_dialog.h"
 #include "usermanagementui.h"
 
-//QString ARM_IP = "127.0.0.1";
-QString ARM_IP = "192.168.2.1";
+QString ARM_IP = "127.0.0.1";
+//QString ARM_IP = "192.168.2.1";
 
 const QString MainWindow::DMS_DONGZUOMOSHI_LIST[20] = { "FS[完全监控]","PS[部分监控]","RO[反向运行]","CO[引导]","CS[机车信号]","BF[应答器故障]","OS[目视]","SR[人控]","SH[调车]","UN[未装备]","SL[休眠]","SB[待机]","TR[冒进]","PT[冒进后]","SF[系统故障]","IS[隔离]","NL[非本务]","SE[欧洲 STM]","SN[国家 STM]","RV[退行]" };
 const QString MainWindow::DMS_ZAIPIN_LIST[10] = { "Unknow","0","550","650","750","850","1700","2000","2300","2600" };
@@ -40,6 +41,8 @@ const char MainWindow::mask_novalue[8] = { static_cast<char>(0xFF),static_cast<c
 
 QQueue<RealTimeDatastructure> MainWindow::RTD_Queue;
 QMutex MainWindow::m_static_mutex;
+QMutex MainWindow::wait_Mutex;
+QWaitCondition MainWindow::wait_Condition;
 
 Train_Dir g_TrainDirection;
 Line_Dir g_LineDirection;
@@ -56,6 +59,7 @@ MainWindow::MainWindow(QString user,QWidget *parent) :
     this->setCentralWidget(ui->tabWidget);
 
 	connect(ui->Draw_FRAME, &ChartView::AnalysisInfoClick_SIGNAL, this, &MainWindow::AnalysisInfoClick_SLOT);
+    connect(tcpCommandClient,&TcpCommandClient::version_Error,this,&MainWindow::show_VersionError);
     //connect(tcpCommandClient, SIGNAL(cleanView_SIGNAL()), this, SLOT(on_ClearLocal_triggered()));
     ui->ATPSHIJIANDATE->setSegmentStyle(QLCDNumber::Flat);
     ui->ATPSHIJIANTIME->setSegmentStyle(QLCDNumber::Flat);
@@ -143,6 +147,24 @@ void MainWindow::UpdateStatusState_SLOT(QString msg, QString backgroud_color, en
 	}
 	tempLable->setStyleSheet(backgroud_color);
 	tempLable->setText(msg);
+//    if(msg=="命令:已连接")
+//    {
+//        QMessageBox msgBox;
+//        msgBox.setIcon(QMessageBox::Information);
+//        msgBox.setText("校验版本");
+//        msgBox.setInformativeText("正在核对板卡程序版本，等待远程回应...");
+//        msgBox.setStandardButtons(QMessageBox::NoButton);
+//        msgBox.show();
+//        QApplication::processEvents();
+//        wait_Mutex.lock();
+//        bool ret = wait_Condition.wait(&wait_Mutex,5000);
+//        msgBox.close();
+//        if(!ret)
+//        {
+
+//        }
+//        wait_Mutex.unlock();
+//    }
 }
 
 /***********************************************
@@ -227,12 +249,29 @@ void MainWindow::ReDraw_MainWindow()
 		}
 	};
 
-    //int count = 0;
 	for (auto & input : V_RTD)
 	{
         ui->Draw_FRAME->UpdateView(input,move_frame);//更新视图
-//        if(loadOldData && ++count%100==0)
-//            QApplication::processEvents();
+        /**********************************************/
+        static QSet<QVector<qint8>> m;
+        if(input.Has_Balish_Compare_Result && Analyze_BaliseMessage::CheckBaliseInfoIllegal(input.BalishData))
+        {
+            QVector<qint8> v;
+            for(int i=0;i<104;++i)
+                v.push_back(input.BalishData.Balise_Tel[i]);
+            m.insert(v);
+            for(auto& v:m)
+            {
+                QString BinaryMessage;
+                for(unsigned int i=0;i<v.size();++i)
+                {
+                    BinaryMessage.append(QString("%1").arg((unsigned char)v[i],2,16,QChar('0')).toUpper()+" ");
+                }
+                qDebug()<<BinaryMessage;
+            }
+            qDebug()<<"**************************************";
+        }
+        /***********************************************/
 	}
     if(!move_frame)
         ui->Draw_FRAME->moveCenturalToPoint(V_RTD.back().IPCTimestamp);
@@ -1157,8 +1196,106 @@ void MainWindow::on_ClearLocal_triggered()//清空本机数据
 
 void MainWindow::on_ImportATPFiles_MENU_triggered()
 {
-    ChooseDesignFiles_DIALOG * d = new ChooseDesignFiles_DIALOG(this);
-    d->show();
+    QStringList fileNameList = QFileDialog::getOpenFileNames(
+                this, "导入列控数据", "", "EXCEL (*.xls *.xlsx)");
+    //表格数据处理
+    QMessageBox processBox;
+    processBox.setIcon(QMessageBox::Information);
+    processBox.setText("正在处理数据表，请误操作");
+    processBox.setStandardButtons(QMessageBox::NoButton);
+    processBox.show();
+    QApplication::processEvents();
+    {
+        QByteArray QBA;
+        QDataStream QDS(&QBA, QIODevice::WriteOnly);
+        QDS.setVersion(QDataStream::Qt_5_12);
+        QDS<<fileNameList;
+        QFile file(QApplication::applicationDirPath()+"/filelist.datastream");
+        file.open(QIODevice::WriteOnly);
+        file.write(QBA);
+        file.close();
+    }
+    QProcess excelConverter;
+    QString path  = QApplication::applicationDirPath()+"/ExcelConverter.exe";
+    excelConverter.start(path);
+    if (!excelConverter.waitForStarted())
+    {
+        processBox.close();
+        QMessageBox::information(this,"数据表导入失败","失败原因:ExcelConverter.exe启动失败");
+        return;
+    }
+    if (!excelConverter.waitForFinished(-1))
+    {
+        QMessageBox::information(this,"数据表导入失败","失败原因:ExcelConverter.exe执行错误");
+        return;
+    }
+    QFile dataSheet(QApplication::applicationDirPath() + '/' + "sheet.datastream");
+    if (!dataSheet.open(QIODevice::ReadOnly))
+    {
+        QMessageBox::information(this,"数据表导入失败","失败原因:sheet.datastream文件读取失败");
+        return;
+    }
+    processBox.close();
+    QByteArray QBA = dataSheet.readAll();
+    QString result;
+    QDataStream QDS(&QBA, QIODevice::ReadOnly);
+    QDS.setVersion(QDataStream::Qt_5_12);
+    QDS>>result;
+    if(result=="ERROR")
+    {
+        QDS>>result;
+        QMessageBox::information(this,"数据表导入失败","失败原因:"+result);
+    }
+    else if(result=="OK")
+    {
+        QDS.startTransaction();
+        QDS >> DesignData::accessRodeMap >> DesignData::stationVec >> DesignData::gradeDownProVec >> DesignData::gradeUpProVec\
+                        >> DesignData::gradeDownBackVec >> DesignData::gradeUpBackVec >> DesignData::neutralSectionUpVec >> DesignData::neutralSectionDownVec\
+                        >> DesignData::pathWayDataDownProVec >> DesignData::pathWayDataUpProVec >> DesignData::pathWayDataDownBackVec >> DesignData::pathWayDataUpBackVec\
+                        >> DesignData::pathWaySpeedDownVec >> DesignData::pathWaySpeedUpVec >> DesignData::pathWaySpeedDownBackVec >> DesignData::pathWaySpeedUpBackVec\
+                        >> DesignData::baliseLocationUpMap >> DesignData::baliseLocationDownMap >> DesignData::balishUseMap >> DesignData::brokenLinkVec >> DesignData::stationSideVec;
+        if(!QDS.commitTransaction())
+        {
+            QMessageBox::critical(this,"数据转换失败","数据无效！");
+            return;
+        }
+        QByteArray SendQBA;
+        QDataStream SendStream(&SendQBA,QIODevice::WriteOnly);
+        SendStream.setVersion(QDataStream::Qt_5_6);
+        SendStream << DesignData::accessRodeMap << DesignData::stationVec << DesignData::gradeDownProVec << DesignData::gradeUpProVec\
+                        << DesignData::gradeDownBackVec << DesignData::gradeUpBackVec << DesignData::neutralSectionUpVec << DesignData::neutralSectionDownVec\
+                        << DesignData::pathWayDataDownProVec << DesignData::pathWayDataUpProVec << DesignData::pathWayDataDownBackVec << DesignData::pathWayDataUpBackVec\
+                        << DesignData::pathWaySpeedDownVec << DesignData::pathWaySpeedUpVec << DesignData::pathWaySpeedDownBackVec << DesignData::pathWaySpeedUpBackVec\
+                        << DesignData::baliseLocationUpMap << DesignData::baliseLocationDownMap << DesignData::balishUseMap << DesignData::brokenLinkVec << DesignData::stationSideVec;
+        qDebug()<<"数据表大小:"<<SendQBA.size();
+        //发送数据
+        QMessageBox box;
+        box.setIcon(QMessageBox::Information);
+        box.setText("数据表已发出，正在等待远端回应...");
+        box.setStandardButtons(QMessageBox::NoButton);
+        box.show();
+        QApplication::processEvents();
+        wait_Mutex.lock();
+        tcpCommandClient->send(Combine_Command_Data(TcpHead(CMD_FROM::CLIENT, CMD_TYPE::CONTROL, CMD_NAME::DATA_SHEET), SendQBA));
+        if(!wait_Condition.wait(&wait_Mutex,5000))
+        {
+            box.close();
+            QMessageBox::critical(this,"远程未响应","数据发送失败！");
+            wait_Mutex.unlock();
+            return;
+        }
+        else
+        {
+            box.close();
+            QMessageBox::information(this,"数据表已发出","数据发送成功！");
+            wait_Mutex.unlock();
+            return;
+        }
+    }
+    else
+    {
+        QMessageBox::information(this,"数据表导入失败","失败原因:sheet.datastream文件内容无效");
+    }
 }
 
 void MainWindow::on_ConfigUserInfo_MENU_triggered()
@@ -1290,4 +1427,10 @@ void MainWindow::on_listWidget_temporySpeed_history_doubleClicked(const QModelIn
 {
     ui->tabWidget->setCurrentIndex(0);
     ui->Draw_FRAME->moveCenturalToPoint(timePointMap[C_LINSHIXIANSU][index.row()]);
+}
+
+void MainWindow::show_VersionError(QString err)
+{
+    QMessageBox::information(this,"版本不一致",err);
+    exit(0);
 }

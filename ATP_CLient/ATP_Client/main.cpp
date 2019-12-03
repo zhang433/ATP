@@ -13,9 +13,10 @@
 #include "usermanagementui.h"
 #include <analyze_rbcmessage.h>
 #include <QSettings>
+#include <QString>
 const char mask_novalue[8] = { static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF) };
 
-
+QString EXE_VERSION = "0.9.1";
 TcpDataClient* tcpDataClient;
 TcpCommandClient* tcpCommandClient;
 
@@ -108,6 +109,7 @@ int main(int argc, char *argv[])
     TCPClient_THREAD_COMMOND->start();
 
     MainWindow w(user);
+    w.setWindowTitle("ATPClient"+EXE_VERSION);
 
     //主界面的地步状态栏的更新
     QObject::connect(tcpCommandClient, &TcpCommandClient::UpdateMainWondowStatue_SIGNAL, &w, &MainWindow::UpdateStatusState_SLOT);

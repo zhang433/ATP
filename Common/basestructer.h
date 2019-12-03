@@ -35,21 +35,19 @@ enum CompareType
     C_LICHENG
 };
 
-
 //********表格数据类型*********************
 enum FileType
 {
     JINLU = 0,
     CHEZHAN,
     PODU,
-    GUOFENXIANG,
-    SHUJU,
+    FENXIANG,
+    XIANLUSHUJU,
     SUDU,
-    YINGDAQI,
+    YINGDAQIWEIZHI,
     DUANLIAN,
-    ZUOBIAOXI,
-    LICHENG,
-    ZHANTAI
+    ZHANTAI,
+    NONE,
 };
 
 //********列车运行方向*********************

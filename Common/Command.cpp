@@ -174,3 +174,16 @@ QDataStream &operator>>(QDataStream &QDS, SequenceDataStructure &R)
 	return QDS;
 }
 
+QByteArray Combine_Command_Data(TcpHead head)
+{
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_6);
+    quint32 size = 0;
+    out << size;
+    out << head;
+    out.device()->seek(0);
+    out << static_cast<quint32>(quint32(static_cast<quint32>(block.size()) - sizeof(quint32)));
+    return block;
+}
+

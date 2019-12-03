@@ -5,12 +5,15 @@
 #include <QFile>
 #include <QDataStream>
 #include <QProcess>
+#include <QString>
 #include <ethtcpclient.h>
 #include <qdir.h>
 #include <QDateTime>
 #include <InnerTcpSocket.h>
 #include <QStorageInfo>
 #include "WLAN_TcpServer.h"
+
+QString EXE_VERSION = "0.9.0";
 
 HistoryFile ATPBit_File, DMSBit_File;
 WLAN_TcpServer* g_wlanTcpServer;

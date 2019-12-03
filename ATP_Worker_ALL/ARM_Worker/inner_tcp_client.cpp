@@ -42,7 +42,8 @@ void InnerTcpClient::decodeBuffer(QDataStream &ds)
                 >> DesignData::pathWayDataDownProVec >> DesignData::pathWayDataUpProVec >> DesignData::pathWayDataDownBackVec >> DesignData::pathWayDataUpBackVec\
                 >> DesignData::pathWaySpeedDownVec >> DesignData::pathWaySpeedUpVec >> DesignData::pathWaySpeedDownBackVec >> DesignData::pathWaySpeedUpBackVec\
                 >> DesignData::baliseLocationUpMap >> DesignData::baliseLocationDownMap >> DesignData::balishUseMap >> DesignData::brokenLinkVec >> DesignData::stationSideVec;
-            qDebug()<<"load sheet data.";
+            if(QDS.atEnd())
+                qDebug()<<"load sheet data.";
             break;
         }
         default:

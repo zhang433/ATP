@@ -459,17 +459,17 @@ void ChartView::moveCenturalToPoint(qreal x)//把视图位置的中心移到最�
 void ChartView::mouseDoubleClickEvent(QMouseEvent *event)//恢复实时绘图模式
 {
 	//chart()->zoomReset();
-//	if (event->button()&Qt::LeftButton)
-//		moveCenturalToPoint(finalXPosition);
-//	else if (event->button()&Qt::RightButton)
-//	{
-//		for (auto iter = l_Callout_show.begin(); iter != l_Callout_show.end(); ++iter)
-//			(*iter)->hide();
-//		l_Callout_hide.append(l_Callout_show);
-//		l_Callout_show.clear();
-//		if (tempTip == nullptr)
-//			tempTip = l_Callout_hide.front();
-//	}
+/*    if (event->button()&Qt::LeftButton)
+        moveCenturalToPoint(finalXPosition);
+    else */if (event->button()&Qt::RightButton)
+    {
+        for (auto iter = l_Callout_show.begin(); iter != l_Callout_show.end(); ++iter)
+            (*iter)->hide();
+        l_Callout_hide.append(l_Callout_show);
+        l_Callout_show.clear();
+        if (tempTip == nullptr)
+            tempTip = l_Callout_hide.front();
+    }
 }
 
 void ChartView::enterEvent(QEvent *)//鼠标移入事件

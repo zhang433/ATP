@@ -147,7 +147,7 @@ bool ReadFileThread::listHandler(QAxObject* excel, QString fileName, FileType fi
 			return returnFlag;
 		}
 		break;
-	case GUOFENXIANG:
+    case FENXIANG:
 		if (sheetCount <= 0 || sheetCount > 2)
 		{
 			emit showResult("分项区信息表子表个数不符合规范");
@@ -155,7 +155,7 @@ bool ReadFileThread::listHandler(QAxObject* excel, QString fileName, FileType fi
 			return returnFlag;
 		}
 		break;
-	case SHUJU:
+    case XIANLUSHUJU:
 		if (sheetCount <= 0 || sheetCount > 4)
 		{
 			emit showResult("数据信息表子表个数不符合规范");
@@ -171,7 +171,7 @@ bool ReadFileThread::listHandler(QAxObject* excel, QString fileName, FileType fi
 			return returnFlag;
 		}
 		break;
-	case YINGDAQI:
+    case YINGDAQIWEIZHI:
 		if (sheetCount <= 0 || sheetCount > 2)
 		{
 			emit showResult("应答器位置表子表个数不符合规范");
@@ -183,22 +183,6 @@ bool ReadFileThread::listHandler(QAxObject* excel, QString fileName, FileType fi
 		if (sheetCount != 1)
 		{
 			emit showResult("断链信息表子表个数不为1");
-			returnFlag = false;
-			return returnFlag;
-		}
-		break;
-	case ZUOBIAOXI:
-		if (sheetCount != 1)
-		{
-			emit showResult("坐标系信息表子表个数不为1");
-			returnFlag = false;
-			return returnFlag;
-		}
-		break;
-	case LICHENG:
-		if (sheetCount != 1)
-		{
-			emit showResult("里程信息表子表个数不为1");
 			returnFlag = false;
 			return returnFlag;
 		}
@@ -425,7 +409,6 @@ bool ReadFileThread::listHandler(QAxObject* excel, QString fileName, FileType fi
                 }
             case CHEZHAN:
                 {
-
                     for(int k = 0; k <= endRow - startRow; k++)
                     {
                         Station station;
@@ -484,7 +467,7 @@ bool ReadFileThread::listHandler(QAxObject* excel, QString fileName, FileType fi
                     }
                     break;
                 }
-            case GUOFENXIANG:
+            case FENXIANG:
                 {
 
                     for(int k = 0; k <= endRow - startRow; k++)
@@ -513,7 +496,7 @@ bool ReadFileThread::listHandler(QAxObject* excel, QString fileName, FileType fi
                     }
                     break;
                 }
-            case SHUJU:
+            case XIANLUSHUJU:
                 {
 
                    for(int k = 0; k <= endRow - startRow; k++)
@@ -593,7 +576,7 @@ bool ReadFileThread::listHandler(QAxObject* excel, QString fileName, FileType fi
                     }
                     break;
                 }
-            case YINGDAQI:
+            case YINGDAQIWEIZHI:
                 {
 
                     for(int k = 0; k <= endRow - startRow; k++)
@@ -607,8 +590,6 @@ bool ReadFileThread::listHandler(QAxObject* excel, QString fileName, FileType fi
                         baliseLocation.baliseUse = dataItemList.at(k).at(5).toString();
                         baliseLocation.remark_1 = dataItemList.at(k).at(6).toString();
                         baliseLocation.remark_2 = dataItemList.at(k).at(7).toString();
-						if (baliseLocation.baliseID == "075-5-13-011-1")
-							qDebug() << "stop";
                         if(sheetName.contains("下行"))
                         {
 							DesignData::baliseLocationDownMap.insert(baliseLocation.baliseID,baliseLocation);
@@ -774,18 +755,18 @@ void ReadFileThread::run()
 		}
 		emit showResult("\n");
 
-		QStringList guofenxiangList = filePath.filter("分相");
-		qDebug() << guofenxiangList;
-		if (!guofenxiangList.isEmpty() && guofenxiangList.count() == 1)
+        QStringList FENXIANGList = filePath.filter("分相");
+        qDebug() << FENXIANGList;
+        if (!FENXIANGList.isEmpty() && FENXIANGList.count() == 1)
 		{
 			DesignData::clearNeutralSectionVec();
 			emit showResult("正在导入分相区信息表...");
-			if (listHandler(excel, guofenxiangList.at(0), FileType::GUOFENXIANG))
+            if (listHandler(excel, FENXIANGList.at(0), FileType::FENXIANG))
 			{
 				num += step;
 				emit showProgressBar(num);
 				emit showResult("分相区信息表导入成功");
-				emit addNumSignal(FileType::GUOFENXIANG);
+                emit addNumSignal(FileType::FENXIANG);
 			}
 			else
 			{
@@ -799,18 +780,18 @@ void ReadFileThread::run()
 		}
 		emit showResult("\n");
 
-		QStringList shujuList = filePath.filter("线路数据");
-		qDebug() << shujuList;
-		if (!shujuList.isEmpty() && shujuList.count() == 1)
+        QStringList XIANLUSHUJUList = filePath.filter("线路数据");
+        qDebug() << XIANLUSHUJUList;
+        if (!XIANLUSHUJUList.isEmpty() && XIANLUSHUJUList.count() == 1)
 		{
 			DesignData::clearPathWayDataVec();
 			emit showResult("正在导入线路数据表...");
-			if (listHandler(excel, shujuList.at(0), FileType::SHUJU))
+            if (listHandler(excel, XIANLUSHUJUList.at(0), FileType::XIANLUSHUJU))
 			{
 				num += step;
 				emit showProgressBar(num);
 				emit showResult("线路数据表导入成功");
-				emit addNumSignal(FileType::SHUJU);
+                emit addNumSignal(FileType::XIANLUSHUJU);
 			}
 			else
 			{
@@ -849,18 +830,18 @@ void ReadFileThread::run()
 		}
 		emit showResult("\n");
 
-		QStringList yingdaqiList = filePath.filter("应答器位置");
-		qDebug() << yingdaqiList;
-		if (!yingdaqiList.isEmpty() && yingdaqiList.count() == 1)
+        QStringList YINGDAQIWEIZHIList = filePath.filter("应答器位置");
+        qDebug() << YINGDAQIWEIZHIList;
+        if (!YINGDAQIWEIZHIList.isEmpty() && YINGDAQIWEIZHIList.count() == 1)
 		{
 			DesignData::clearBaliseLocationVec();
 			emit showResult("正在导入应答器位置表...");
-			if (listHandler(excel, yingdaqiList.at(0), FileType::YINGDAQI))
+            if (listHandler(excel, YINGDAQIWEIZHIList.at(0), FileType::YINGDAQIWEIZHI))
 			{
 				num += step;
 				emit showProgressBar(num);
 				emit showResult("应答器位置表导入成功");
-				emit addNumSignal(FileType::YINGDAQI);
+                emit addNumSignal(FileType::YINGDAQIWEIZHI);
 			}
 			else
 			{
@@ -929,6 +910,7 @@ void ReadFileThread::run()
 
 		QByteArray QBA;
 		QDataStream QDS(&QBA,QIODevice::WriteOnly);
+        QDS.setVersion(QDataStream::Qt_5_6);
 		QDS << DesignData::accessRodeMap << DesignData::stationVec << DesignData::gradeDownProVec << DesignData::gradeUpProVec\
 			<< DesignData::gradeDownBackVec << DesignData::gradeUpBackVec << DesignData::neutralSectionUpVec << DesignData::neutralSectionDownVec\
 			<< DesignData::pathWayDataDownProVec << DesignData::pathWayDataUpProVec << DesignData::pathWayDataDownBackVec << DesignData::pathWayDataUpBackVec\

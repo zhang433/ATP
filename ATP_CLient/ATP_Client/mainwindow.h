@@ -20,6 +20,7 @@
 #include "chartview.h"
 #include "callout.h"
 #include "getreport_dialog.h"
+#include <QWaitCondition>
 
 extern QString ARM_IP;
 
@@ -52,6 +53,8 @@ public:
 	static QQueue<RealTimeDatastructure> RTD_Queue;
 	static QQueue<QVector<QVector<QVector<QString>>>>  ResultVec_Queue;
 	static QVector<QString> AnalysisDMS_RTD2String(const RealTimeDatastructure& RTD);//分析DMS数据的信息
+    static QMutex wait_Mutex;
+    static QWaitCondition wait_Condition;
 	void AnalysisInfoClick_SLOT(qint64);//当视图中的重要信息被点击时用于展示点击信息
     explicit MainWindow(QString user,QWidget *parent = 0);
 	~MainWindow();
@@ -113,6 +116,8 @@ private slots:
     void on_listWidget_neutralSection_compare_history_doubleClicked(const QModelIndex &index);
 
     void on_listWidget_temporySpeed_history_doubleClicked(const QModelIndex &index);
+
+    void show_VersionError(QString);
 
 protected:
     void closeEvent(QCloseEvent * event) override;

@@ -154,26 +154,20 @@ void ChooseDesignFiles_DIALOG::addFileNum(FileType fileType)
         case PODU:
             poduNum++;
             break;
-        case GUOFENXIANG:
+        case FENXIANG:
             guofenxiangNum++;
             break;
-        case SHUJU:
+        case XIANLUSHUJU:
             shujuNum++;
             break;
         case SUDU:
             suduNum++;
             break;
-        case YINGDAQI:
+        case YINGDAQIWEIZHI:
             yingdaqiNum++;
             break;
         case DUANLIAN:
             duanlianNum++;
-            break;
-        case ZUOBIAOXI:
-            zuobiaoxiNum++;
-            break;
-        case LICHENG:
-            lichengNum++;
             break;
         case ZHANTAI:
             zhantaiceNum++;

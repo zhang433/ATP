@@ -34,6 +34,7 @@ public:
     static QString GetBaliseID(const BaliseBitMessage &input_data);//从一个应答器原始报文中提取应答器标识号
     static QVector<int> GetPackagePosition(const QString input,const BalisePackCollector& data_collector=Analyze_BaliseMessage::Analyze_Result);//查找给定的信息包的位置
     static BalisePackage FindItem(QString name,BalisePackage package);//在指定的信息包package中找到指定name的项，考虑到会有多项存在的情况，以QVector的形式返回
+    static bool CheckBaliseInfoIllegal(const BaliseBitMessage &input_data);//检查报文是否可以正常解析
 private:
     static int AnalyzeBaliseMsg();
     static int Analyze_ETCS_27();

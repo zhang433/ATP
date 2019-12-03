@@ -4,6 +4,8 @@
 #include <QDir>
 #include <QtAlgorithms>
 
+extern QString EXE_VERSION;
+
 WLAN_TcpSocket::WLAN_TcpSocket(qintptr socketDescriptor, WLAN_TcpServer* server):
     TcpAbstract(socketDescriptor,5000),
     statusTimer(this)
@@ -109,6 +111,7 @@ void inline WLAN_TcpSocket::ProcessingCommand_DATASHEET(QDataStream& in)
         file.close();
     }
     inner_tcp->send(Combine_Command_Data(TcpHead(CMD_FROM::RECEIVER, CMD_TYPE::INSIDE, CMD_NAME::DATA_SHEET), QBA));
+    this->sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::RECEIVER, CMD_TYPE::CONTROL, CMD_NAME::SHEETRECEIVED_REPLY)));
 }
 
 void WLAN_TcpSocket::SendBetteryPersent_SLOT()
@@ -278,7 +281,8 @@ void inline WLAN_TcpSocket::ProcessingCommand_SOCKET_TYPE(QDataStream& in)
 		int pos2 = DMSReportFile.name().lastIndexOf('.');
 		QString TrainNumber = DMSReportFile.name().mid(pos1 + 1, pos2 - pos1 - 1);
 		qDebug() << TrainNumber;
-		this->sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::RECEIVER, CMD_TYPE::CONTROL, CMD_NAME::SEND_TRAIN_NUMBER), TrainNumber));
+        this->sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::RECEIVER, CMD_TYPE::CONTROL, CMD_NAME::SEND_TRAIN_NUMBER), TrainNumber));
+        this->sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::RECEIVER, CMD_TYPE::CONTROL, CMD_NAME::VERSION),EXE_VERSION));
 	}
     else if (socketType == static_cast<quint8>(DATA_SOCKET))
 	{

@@ -18,8 +18,6 @@ InnerTcpSocket::InnerTcpSocket(qintptr handle,InnerTcpServer* server):
 		file.open(QIODevice::ReadOnly);
 		QByteArray QBA = file.readAll();
 		this->sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::RECEIVER, CMD_TYPE::INSIDE, CMD_NAME::DATA_SHEET), QBA));
-		QByteArray temp = QBA.mid(0, 8);
-		qDebug() << temp.toHex();
 		//qDebug() << sizeof(TcpHead);
 		qDebug() << "inside send sheet data size:" << QBA.size();
 		file.close();
@@ -37,12 +35,12 @@ InnerTcpSocket::~InnerTcpSocket()
 
 void InnerTcpSocket::HeartbeatTimeout_SLOT()
 {
-#ifdef _WIN32
-    qDebug()<<(QProcess::startDetached("ARM_Worker.exe")?"ARM_Worker start success.":"ARM_Worker start failed.");
-#endif
-#ifdef __linux
-    qDebug()<<(QProcess::startDetached("/home/root/ARM_Worker")?"ARM_Worker start success.":"ARM_Worker start failed.");
-#endif
+//#ifdef _WIN32
+//    qDebug()<<(QProcess::startDetached("ARM_Worker.exe")?"ARM_Worker start success.":"ARM_Worker start failed.");
+//#endif
+//#ifdef __linux
+//    qDebug()<<(QProcess::startDetached("/home/root/ARM_Worker")?"ARM_Worker start success.":"ARM_Worker start failed.");
+//#endif
 
 	this->abort();
 	this->deleteLater();

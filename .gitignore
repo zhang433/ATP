@@ -12,5 +12,6 @@ moc_*.h
 !*.Data
 !*.xls
 !*.xlsx
+!*.exe
 !others/config/*
 !README

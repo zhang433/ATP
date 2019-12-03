@@ -36,6 +36,8 @@ enum CMD_NAME
 	BETTERY_PERSENT,//电量信息
     SOCKET_TYPE,//用于确定连接的socket的类型
     SD_PERSENT,
+    VERSION,//版本号
+    SHEETRECEIVED_REPLY,//接收到数据表的回应
 };
 
 enum SOCKET_TYPE {
@@ -153,3 +155,5 @@ QByteArray Combine_Command_Data(TcpHead head, const T& first, const Args& ... re
 	out << static_cast<quint32>(quint32(static_cast<quint32>(block.size()) - sizeof(quint32)));
 	return block;
 }
+QByteArray Combine_Command_Data(TcpHead head);
+

@@ -89,10 +89,31 @@ QVector<QVector<QString>> BaliseStation::Compare(const BalisePackCollector& BPK,
             return {};
     }
     if(indexes.size()!=1)
-        return {{"number of package E72 is"+QString::number(indexes.size()),"Wrong"}};
-    BalisePackage ETCS_72 = BPK[indexes[0]];//从解析结构中获取ETCS-72包
-    QVector<Item> Q_DIR_Vec = Analyze_BaliseMessage::FindItem("Q_DIR", ETCS_72);//从ETCS_72包中找到所有的表示验证方向的项，但在本包中，实际上只存在一个项
-    if ((Q_DIR_Vec[1].value == 0 && g_TrainDirection == FRONT) || (Q_DIR_Vec[1].value == 1 && g_TrainDirection == BACK))//ETCS-72包只有一个DIR项，作为整个包的运行验证方向，因此只需确定Q_DIR_Vec[0]
+    {
+        qDebug()<<"BPK*************************************";
+        for(auto& x:BPK)
+            for(auto& line:x)
+                qDebug()<<line.name<<line.value<<line.remark;
+        qDebug()<<"BPK*************************************";
+        for(auto i:indexes)
+        {
+            BalisePackage temp_ETCS_72 = BPK[i];
+            qDebug()<<"/**********************E72Error***************************/";
+            for(auto& it:temp_ETCS_72)
+                qDebug()<<it.name<<it.value<<it.remark;
+            qDebug()<<"/*********************************************************/";
+        }
+    }
+    BalisePackage ETCS_72;
+    for(auto i:indexes)
+    {
+        BalisePackage temp_ETCS_72 = BPK[i];//从解析结构中获取ETCS-72包
+        QVector<Item> Q_DIR_Vec = Analyze_BaliseMessage::FindItem("Q_DIR", temp_ETCS_72);//从ETCS_72包中找到所有的表示验证方向的项，但在本包中，实际上只存在一个项
+        if ((Q_DIR_Vec[1].value == 0 && g_TrainDirection == FRONT) || (Q_DIR_Vec[1].value == 1 && g_TrainDirection == BACK))//ETCS-72包只有一个DIR项，作为整个包的运行验证方向，因此只需确定Q_DIR_Vec[0]
+            continue;
+        ETCS_72 = temp_ETCS_72;
+    }
+    if(ETCS_72.isEmpty())
         return {};
     /**********************执行到这里，说明符合本函数的执行条件，下面开始比对逻辑********************************/
     QStack<char> temp_stack;

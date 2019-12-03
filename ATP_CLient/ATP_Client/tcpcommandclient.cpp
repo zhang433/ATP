@@ -1,6 +1,8 @@
 #include "TcpCommandClient.h"
 #include <readdesignfile_thread.h>
 
+extern QString EXE_VERSION;
+
 TcpCommandClient::TcpCommandClient():
     TcpAbstract (QHostAddress(ARM_IP),12300)
 {
@@ -25,6 +27,7 @@ void TcpCommandClient::changeStatus_SLOT(QAbstractSocket::SocketState state)
         emit UpdateMainWondowStatue_SIGNAL("命令:已连接", "QLabel{ color: green }", STATUS_BAR::COMMAND_SATUS);
 		HeartbeatTimeout_SLOT();
         sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::CLIENT, CMD_TYPE::CONTROL, CMD_NAME::SOCKET_TYPE), static_cast<quint8>(COMMAND_SOCKET)));
+
 	}
 }
 
@@ -38,8 +41,20 @@ void TcpCommandClient::decodeBuffer(QDataStream& QDS)
         {
             switch (TH.cmd_name)
             {
-            case CMD_NAME::DATA_SHEET:
-                ProcessingCommand_DATA_SHEET(QDS);
+            case CMD_NAME::VERSION:
+            {
+                QString remote_version;
+                QDS >> remote_version;
+                auto sp_remote = remote_version.split(".");
+                auto sp_this = EXE_VERSION.split(".");
+                if(sp_remote[0]!=sp_this[0] || sp_remote[1]!=sp_this[1])
+                    emit version_Error("Version Error!Server Version is "+remote_version);
+                break;
+            }
+            case CMD_NAME::SHEETRECEIVED_REPLY:
+                MainWindow::wait_Mutex.lock();
+                MainWindow::wait_Condition.notify_all();
+                MainWindow::wait_Mutex.unlock();
                 break;
             case CMD_NAME::SEND_TRAIN_NUMBER:
             {
@@ -76,32 +91,6 @@ void TcpCommandClient::decodeBuffer(QDataStream& QDS)
     else
     {
         qDebug() << "unknow data source:";
-    }
-}
-
-void inline TcpCommandClient::ProcessingCommand_DATA_SHEET(QDataStream& ds)
-{
-    QString sheetName;
-    QString fileName;
-
-    ds >> fileName >> sheetName;
-    if (sheetName == "clear")
-    {
-        emit HasReturn2Sheet_SIGNAL("clear success!");
-        //return;
-    }
-    else
-    {
-        sheetMutex.lock();
-        foreach (auto var,sRecordVec)
-        {
-            if (var.sheetName == (fileName + sheetName))
-            {
-                var.isReturn = true;
-                emit HasReturn2Sheet_SIGNAL(fileName + " " + sheetName + "????");
-            }
-        }
-        sheetMutex.unlock();
     }
 }
 

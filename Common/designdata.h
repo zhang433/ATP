@@ -10,6 +10,7 @@
 #include <QVector>
 #include <QObject>
 #include <QMap>
+#include <QStringList>
 #include <unordered_map>
 
 class DesignData : public QObject

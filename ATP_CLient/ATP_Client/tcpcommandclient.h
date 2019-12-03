@@ -22,11 +22,11 @@ signals:
     void changeDialogStatue_SIGNAL(QString, QString);
     void ReDraw_MainWindow_SIGNAL();
     void init();
+    void version_Error(QString);
 private:
     TcpHead TH;
     RealTimeDatastructure RTD;
     void decodeBuffer(QDataStream& QDS) override;
-    void inline ProcessingCommand_DATA_SHEET(QDataStream& ds);
     void inline ProcessingCommand_CHANGE_ARGUMENT(QDataStream& ds);
     void inline ProcessingCommand_LIST_FILE(QDataStream& ds);
     void inline ProcessingCommand_GET_SELECTED_FILE(QDataStream& ds);
