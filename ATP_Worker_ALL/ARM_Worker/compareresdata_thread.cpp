@@ -10,6 +10,7 @@
 #include <QString>
 #include "inner_tcp_client.h"
 #include <QtAlgorithms>
+#include <QMutexLocker>
 #include "baliselocation.h"
 #include "balisestation.h"
 using namespace std;
@@ -286,6 +287,7 @@ void CompareBaliseData_THREAD::on_UdpThread_DataCome(qint32 order, qint64 timest
 
 void CompareBaliseData_THREAD::CompareBaliseData(int DataType)
 {
+    QMutexLocker locker(&DesignData::SheetMutex);
     static QList<QString> RecordBaliseGroup;
 	SideLineFlag = false;//侧线信息置空操作，如果侧线该变量不为空，则比对逻辑中会执行侧线的比对逻辑
 	m_baliseData_Package = Analyze_BaliseMessage::Resolve(m_originBaliseBitMessage);//解析原始数据获得应答器报文的解析结果

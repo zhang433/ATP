@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			QDS << QString("OK") << DesignData::accessRodeMap << DesignData::stationVec << DesignData::gradeDownProVec << DesignData::gradeUpProVec\
+			QDS << QString("OK") << w->InnerInfo << DesignData::accessRodeMap << DesignData::stationVec << DesignData::gradeDownProVec << DesignData::gradeUpProVec\
 				<< DesignData::gradeDownBackVec << DesignData::gradeUpBackVec << DesignData::neutralSectionUpVec << DesignData::neutralSectionDownVec\
 				<< DesignData::pathWayDataDownProVec << DesignData::pathWayDataUpProVec << DesignData::pathWayDataDownBackVec << DesignData::pathWayDataUpBackVec\
 				<< DesignData::pathWaySpeedDownVec << DesignData::pathWaySpeedUpVec << DesignData::pathWaySpeedDownBackVec << DesignData::pathWaySpeedUpBackVec\

@@ -35,6 +35,8 @@ void InnerTcpClient::decodeBuffer(QDataStream &ds)
             break;
 		case CMD_NAME::DATA_SHEET:
         {
+            QMutexLocker locker(&DesignData::SheetMutex);
+            DesignData::clearAll();
 			qDebug() << "inside receive data size:"<<QBA.size();
             QDataStream QDS(&QBA,QIODevice::ReadOnly);
             QDS >> DesignData::accessRodeMap >> DesignData::stationVec >> DesignData::gradeDownProVec >> DesignData::gradeUpProVec\

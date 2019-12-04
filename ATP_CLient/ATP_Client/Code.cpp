@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 #include <iostream>
 #include <string>

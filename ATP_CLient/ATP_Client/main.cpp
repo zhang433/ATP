@@ -1,4 +1,4 @@
-#ifdef _MSC_VER
+﻿#ifdef _MSC_VER
 #pragma execution_character_set("utf-8")
 #endif
 #include "mainwindow.h"
@@ -17,6 +17,7 @@
 const char mask_novalue[8] = { static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF),static_cast<char>(0xFF) };
 
 QString EXE_VERSION = "0.9.1";
+QString REMOTE_VERSION = "0.0.0";
 TcpDataClient* tcpDataClient;
 TcpCommandClient* tcpCommandClient;
 

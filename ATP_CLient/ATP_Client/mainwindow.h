@@ -162,4 +162,5 @@ private:
 
     QMap<CompareType,QVector<qint64>> timePointMap;
     bool move_frame = true;
+    bool VersionIsVerfied = false;
 };

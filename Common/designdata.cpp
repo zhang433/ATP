@@ -1,7 +1,7 @@
 ﻿#include "designdata.h"
 #include <qmap.h>
 #include <QDebug>
-
+QMutex DesignData::SheetMutex;
 
 //********静态变量初始化*********************************
 QMultiMap<QString, AccessRode_MapType> DesignData::accessRodeMap;

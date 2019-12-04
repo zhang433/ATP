@@ -11,11 +11,13 @@
 #include <QObject>
 #include <QMap>
 #include <QStringList>
+#include <QMutex>
 #include <unordered_map>
 
 class DesignData : public QObject
 {
 public:
+    static QMutex SheetMutex;
     static QMultiMap<QString, AccessRode_MapType> accessRodeMap;//将各车站的进路数据表统一汇总成哈希的形式，key为应答器号，value为要保留的数据信息
 
     static QVector<Station> stationVec;                   //车站表

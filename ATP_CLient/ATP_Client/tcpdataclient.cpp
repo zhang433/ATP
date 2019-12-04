@@ -1,5 +1,4 @@
-#include "tcpdataclient.h"
-#include <readdesignfile_thread.h>
+﻿#include "tcpdataclient.h"
 
 TcpDataClient::TcpDataClient():
     TcpAbstract (QHostAddress(ARM_IP),12300)

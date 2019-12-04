@@ -22,15 +22,18 @@
 #include "analyze_resmessage.h"
 #include <QResource>
 #include <analyze_rbcmessage.h>
+#include "designdata.h"
 #include <QDir>
 #include <QStringList>
 #include "getreport_dialog.h"
 #include "tcpcommandclient.h"
-#include "choosedesignfiles_dialog.h"
 #include "usermanagementui.h"
 
-QString ARM_IP = "127.0.0.1";
-//QString ARM_IP = "192.168.2.1";
+//QString ARM_IP = "127.0.0.1";
+extern QString EXE_VERSION;
+extern QString REMOTE_VERSION;
+
+QString ARM_IP = "192.168.2.1";
 
 const QString MainWindow::DMS_DONGZUOMOSHI_LIST[20] = { "FS[完全监控]","PS[部分监控]","RO[反向运行]","CO[引导]","CS[机车信号]","BF[应答器故障]","OS[目视]","SR[人控]","SH[调车]","UN[未装备]","SL[休眠]","SB[待机]","TR[冒进]","PT[冒进后]","SF[系统故障]","IS[隔离]","NL[非本务]","SE[欧洲 STM]","SN[国家 STM]","RV[退行]" };
 const QString MainWindow::DMS_ZAIPIN_LIST[10] = { "Unknow","0","550","650","750","850","1700","2000","2300","2600" };
@@ -147,24 +150,39 @@ void MainWindow::UpdateStatusState_SLOT(QString msg, QString backgroud_color, en
 	}
 	tempLable->setStyleSheet(backgroud_color);
 	tempLable->setText(msg);
-//    if(msg=="命令:已连接")
-//    {
-//        QMessageBox msgBox;
-//        msgBox.setIcon(QMessageBox::Information);
-//        msgBox.setText("校验版本");
-//        msgBox.setInformativeText("正在核对板卡程序版本，等待远程回应...");
-//        msgBox.setStandardButtons(QMessageBox::NoButton);
-//        msgBox.show();
-//        QApplication::processEvents();
-//        wait_Mutex.lock();
-//        bool ret = wait_Condition.wait(&wait_Mutex,5000);
-//        msgBox.close();
-//        if(!ret)
-//        {
-
-//        }
-//        wait_Mutex.unlock();
-//    }
+    if(msg=="命令:已连接")
+    {
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.setText("校验版本");
+        msgBox.setInformativeText("正在核对板卡程序版本，等待远程回应，请勿操作");
+        msgBox.setStandardButtons(QMessageBox::NoButton);
+        msgBox.show();
+        QApplication::processEvents();
+        wait_Mutex.lock();
+        VersionIsVerfied = false;
+        tcpCommandClient->send(Combine_Command_Data(TcpHead(CMD_FROM::CLIENT, CMD_TYPE::CONTROL, CMD_NAME::VERSION)));
+        bool ret = wait_Condition.wait(&wait_Mutex,5000);
+        msgBox.close();
+        if(!ret)
+        {
+            QMessageBox::critical(this,"错误","远端无反应，版本校验失败，程序将强制退出！");
+            exit(0);
+        }
+        else
+        {
+            auto sp_remote = REMOTE_VERSION.split(".");
+            auto sp_this = EXE_VERSION.split(".");
+            if(sp_remote.size()!=sp_this.size() || sp_remote[0]!=sp_this[0] || sp_remote[1]!=sp_this[1])
+            {
+                QMessageBox::critical(nullptr,"错误","版本错误，远端版本号为："+REMOTE_VERSION);
+                exit(0);
+            }
+            QMessageBox::information(this,"提示","版本校验成功！远端程序版本号为："+REMOTE_VERSION);
+        }
+        wait_Mutex.unlock();
+        VersionIsVerfied = true;
+    }
 }
 
 /***********************************************
@@ -174,6 +192,8 @@ void MainWindow::UpdateStatusState_SLOT(QString msg, QString backgroud_color, en
 *************************************************/
 void MainWindow::ReDraw_MainWindow()
 {
+    if(!VersionIsVerfied)
+        return;
 	static RealTimeDatastructure static_RTD;
 
 	if (MainWindow::RTD_Queue.empty())
@@ -1198,10 +1218,15 @@ void MainWindow::on_ImportATPFiles_MENU_triggered()
 {
     QStringList fileNameList = QFileDialog::getOpenFileNames(
                 this, "导入列控数据", "", "EXCEL (*.xls *.xlsx)");
+    if(fileNameList.isEmpty())
+    {
+        QMessageBox::information(this,"提示","没有选择文件！");
+        return;
+    }
     //表格数据处理
     QMessageBox processBox;
     processBox.setIcon(QMessageBox::Information);
-    processBox.setText("正在处理数据表，请误操作");
+    processBox.setText("正在处理数据表，请勿操作");
     processBox.setStandardButtons(QMessageBox::NoButton);
     processBox.show();
     QApplication::processEvents();
@@ -1236,6 +1261,7 @@ void MainWindow::on_ImportATPFiles_MENU_triggered()
         return;
     }
     processBox.close();
+    QApplication::processEvents();
     QByteArray QBA = dataSheet.readAll();
     QString result;
     QDataStream QDS(&QBA, QIODevice::ReadOnly);
@@ -1244,11 +1270,12 @@ void MainWindow::on_ImportATPFiles_MENU_triggered()
     if(result=="ERROR")
     {
         QDS>>result;
-        QMessageBox::information(this,"数据表导入失败","失败原因:"+result);
+        QMessageBox::critical(this,"数据表导入失败","失败原因:"+result);
     }
     else if(result=="OK")
     {
         QDS.startTransaction();
+        QDS >> result;
         QDS >> DesignData::accessRodeMap >> DesignData::stationVec >> DesignData::gradeDownProVec >> DesignData::gradeUpProVec\
                         >> DesignData::gradeDownBackVec >> DesignData::gradeUpBackVec >> DesignData::neutralSectionUpVec >> DesignData::neutralSectionDownVec\
                         >> DesignData::pathWayDataDownProVec >> DesignData::pathWayDataUpProVec >> DesignData::pathWayDataDownBackVec >> DesignData::pathWayDataUpBackVec\
@@ -1269,6 +1296,7 @@ void MainWindow::on_ImportATPFiles_MENU_triggered()
                         << DesignData::baliseLocationUpMap << DesignData::baliseLocationDownMap << DesignData::balishUseMap << DesignData::brokenLinkVec << DesignData::stationSideVec;
         qDebug()<<"数据表大小:"<<SendQBA.size();
         //发送数据
+        QMessageBox::information(this,"提示","处理结果："+result);
         QMessageBox box;
         box.setIcon(QMessageBox::Information);
         box.setText("数据表已发出，正在等待远端回应...");
@@ -1280,6 +1308,7 @@ void MainWindow::on_ImportATPFiles_MENU_triggered()
         if(!wait_Condition.wait(&wait_Mutex,5000))
         {
             box.close();
+            QApplication::processEvents();
             QMessageBox::critical(this,"远程未响应","数据发送失败！");
             wait_Mutex.unlock();
             return;
@@ -1287,6 +1316,7 @@ void MainWindow::on_ImportATPFiles_MENU_triggered()
         else
         {
             box.close();
+            QApplication::processEvents();
             QMessageBox::information(this,"数据表已发出","数据发送成功！");
             wait_Mutex.unlock();
             return;

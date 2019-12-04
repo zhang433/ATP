@@ -33,7 +33,6 @@ SOURCES += \
     ../../Common/basestructer.cpp \
     ../../Common/command.cpp \
     ../../Common/designdata.cpp \
-    choosedesignfiles_dialog.cpp \
         main.cpp \
         mainwindow.cpp \
     analyzeresultshow_dialog.cpp \
@@ -41,7 +40,6 @@ SOURCES += \
     chartview.cpp \
     getreport_dialog.cpp \
     Excelwork.cpp \
-    readdesignfile_thread.cpp \
     showresponsermsg_dialog.cpp \
     tcpcommandclient.cpp \
     tcpdataclient.cpp \
@@ -54,11 +52,9 @@ HEADERS += \
     ../../Common/analyze_resmessage.h \
     ../../Common/basestructer.h \
     ../../Common/designdata.h \
-    choosedesignfiles_dialog.h \
     encrypt.h \
         mainwindow.h \
     Config_arg.h \
-    readdesignfile_thread.h \
     self_define.h \
     analyzeresultshow_dialog.h \
     callout.h \
@@ -71,7 +67,6 @@ HEADERS += \
     usermanagementui.h
 
 FORMS += \
-    choosedesignfiles.ui \
         mainwindow.ui \
     rbcshow_dialog.ui \
     getreport_dialog.ui \

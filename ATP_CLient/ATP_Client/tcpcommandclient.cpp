@@ -1,7 +1,6 @@
-#include "TcpCommandClient.h"
-#include <readdesignfile_thread.h>
+﻿#include "TcpCommandClient.h"
 
-extern QString EXE_VERSION;
+extern QString REMOTE_VERSION;
 
 TcpCommandClient::TcpCommandClient():
     TcpAbstract (QHostAddress(ARM_IP),12300)
@@ -27,7 +26,6 @@ void TcpCommandClient::changeStatus_SLOT(QAbstractSocket::SocketState state)
         emit UpdateMainWondowStatue_SIGNAL("命令:已连接", "QLabel{ color: green }", STATUS_BAR::COMMAND_SATUS);
 		HeartbeatTimeout_SLOT();
         sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::CLIENT, CMD_TYPE::CONTROL, CMD_NAME::SOCKET_TYPE), static_cast<quint8>(COMMAND_SOCKET)));
-
 	}
 }
 
@@ -45,10 +43,10 @@ void TcpCommandClient::decodeBuffer(QDataStream& QDS)
             {
                 QString remote_version;
                 QDS >> remote_version;
-                auto sp_remote = remote_version.split(".");
-                auto sp_this = EXE_VERSION.split(".");
-                if(sp_remote[0]!=sp_this[0] || sp_remote[1]!=sp_this[1])
-                    emit version_Error("Version Error!Server Version is "+remote_version);
+                REMOTE_VERSION = remote_version;
+                MainWindow::wait_Mutex.lock();
+                MainWindow::wait_Condition.notify_all();
+                MainWindow::wait_Mutex.unlock();
                 break;
             }
             case CMD_NAME::SHEETRECEIVED_REPLY:
@@ -73,13 +71,13 @@ void TcpCommandClient::decodeBuffer(QDataStream& QDS)
 				qint8 p1;
 				QDS >> p1;
 				BackColor = (p1 <= 20 ? "QLabel{ color: red }" : "QLabel{ color: green }");
-				emit UpdateMainWondowStatue_SIGNAL("??:" + QString::number(p1) + "%", BackColor, STATUS_BAR::BETTERY_STATUS);
+				emit UpdateMainWondowStatue_SIGNAL("电量:" + QString::number(p1) + "%", BackColor, STATUS_BAR::BETTERY_STATUS);
                 break;
 			case CMD_NAME::SD_PERSENT:
 				qreal p2;
 				QDS >> p2;
 				BackColor = (p2 >= 80 ? "QLabel{ color: red }" : "QLabel{ color: green }");
-				emit UpdateMainWondowStatue_SIGNAL("SD?:" + QString::number(p2,'f',2)+"%", BackColor, STATUS_BAR::SD_CAPACITY);
+				emit UpdateMainWondowStatue_SIGNAL("空间使用:" + QString::number(p2,'f',2)+"%", BackColor, STATUS_BAR::SD_CAPACITY);
 				break;
             }
         }

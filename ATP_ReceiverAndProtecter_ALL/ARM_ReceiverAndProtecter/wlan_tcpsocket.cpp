@@ -49,6 +49,9 @@ void WLAN_TcpSocket::decodeBuffer(QDataStream &in)
 		case CMD_NAME::SOCKET_TYPE://初始化时设置的socket类型
 			ProcessingCommand_SOCKET_TYPE(in);
 			break;
+        case CMD_NAME::VERSION://索要版本号
+            this->sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::RECEIVER, CMD_TYPE::CONTROL, CMD_NAME::VERSION),EXE_VERSION));
+            break;
         case CMD_NAME::SET_TRAIN_NUMBER://设定车次
         {
             QString str;
@@ -282,7 +285,6 @@ void inline WLAN_TcpSocket::ProcessingCommand_SOCKET_TYPE(QDataStream& in)
 		QString TrainNumber = DMSReportFile.name().mid(pos1 + 1, pos2 - pos1 - 1);
 		qDebug() << TrainNumber;
         this->sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::RECEIVER, CMD_TYPE::CONTROL, CMD_NAME::SEND_TRAIN_NUMBER), TrainNumber));
-        this->sendArray_SLOT(Combine_Command_Data(TcpHead(CMD_FROM::RECEIVER, CMD_TYPE::CONTROL, CMD_NAME::VERSION),EXE_VERSION));
 	}
     else if (socketType == static_cast<quint8>(DATA_SOCKET))
 	{

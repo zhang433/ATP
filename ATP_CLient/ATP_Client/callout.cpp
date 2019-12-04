@@ -1,4 +1,4 @@
-#include "callout.h"
+﻿#include "callout.h"
 
 #include <QPainter>
 #include <QFontMetrics>
